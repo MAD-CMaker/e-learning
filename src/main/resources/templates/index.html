@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Plataforma de Ensino E-Learning</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container"> <div th:if="${mensagemGlobal}" class="success-message" th:text="${mensagemGlobal}"></div>
+    <div th:if="${erro_login}" class="error-message" th:text="${erro_login}"></div>
+    <h1 th:text="${mensagemBoasVindas ?: 'Bem-vindo à Plataforma de Ensino Remoto!'}">Título Padrão</h1>
+    <p>Esta é a página inicial da nossa plataforma de aprendizado online.</p>
+
+    <div th:if="${dataHora}"> <p>Data e Hora Atuais: <span th:text="${dataHora}"></span></p>
+    </div>
+
+    <hr>
+    <h2>O que você gostaria de fazer?</h2>
+    <ul>
+        <li><a th:href="@{/login}">Login de Usuário</a></li>
+        <li><a th:href="@{/cadastro}">Cadastro de Usuário</a></li>
+        <li><a th:href="@{/cursos}">Ver Cursos</a></li>
+        <li><a th:href="@{/contato}">Fazer uma Pergunta</a></li>
+    </ul>
+</div>
+
+</body>
+</html>

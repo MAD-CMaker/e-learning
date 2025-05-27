@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Questões do Exame: ' + ${examDefinition.title}"></title>
+    <style>
+        /* Reutilize ou defina estilos similares aos de form-aula.html ou form-exam-definition.html */
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f8f9fa; }
+        .container { max-width: 900px; margin: 0 auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .breadcrumb { margin-bottom: 15px; }
+        .breadcrumb a { text-decoration: none; }
+        h1, h2, h3 { color: #0056b3; }
+        .form-section { margin-top: 30px; padding: 20px; border: 1px solid #eee; border-radius: 5px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group textarea,
+        .form-group select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .form-group textarea { min-height: 80px; }
+        .form-group button { padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .question-list li { padding: 8px; margin-bottom: 5px; border-bottom: 1px dotted #eee; }
+        .error-message { color: red; }
+        .success-message { color: green; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <p class="breadcrumb">
+        <a th:href="@{/cursos}">Cursos</a> &gt;
+        <a th:href="@{/cursos/{id}(id=${curso.idCourse})}" th:text="${curso.title}">Nome Curso</a> &gt;
+        Gerenciar Exame: <span th:text="${examDefinition.title}"></span> &gt;
+        Questões
+    </p>
+
+    <h1>Gerenciar Questões do Exame: <span th:text="${examDefinition.title}"></span></h1>
+    <p><strong>Descrição do Exame:</strong> <span th:text="${examDefinition.description ?: 'N/A'}"></span></p>
+
+    <div th:if="${sucesso_questao}" class="success-message" th:text="${sucesso_questao}"></div>
+    <div th:if="${erro_questao}" class="error-message" th:text="${erro_questao}"></div>
+    <div th:if="${erro_geral}" class="error-message" th:text="${erro_geral}"></div>
+
+
+    <div class="form-section">
+        <h3>Adicionar Nova Questão</h3>
+        <form th:action="@{/cursos/{idCurso}/exames/{idExamDefinition}/questoes/adicionar(idCurso=${curso.idCourse}, idExamDefinition=${examDefinition.idDefinitionExam})}"
+              th:object="${novaQuestao}" method="post">
+
+            <input type="hidden" th:field="*{idDefinitionExam}" />
+
+            <div class="form-group">
+                <label for="statement">Enunciado:</label>
+                <textarea id="statement" th:field="*{statement}" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="exerciseType">Tipo de Questão:</label>
+                <select id="exerciseType" th:field="*{exerciseType}" required>
+                    <option value="">Selecione...</option>
+                    <option th:each="tipo : ${tiposExercicio}"
+                            th:value="${tipo}"
+                            th:text="${tipo.toString().replace('_', ' ')}">TIPO</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="options">Opções (ex: JSON para Múltipla Escolha, se aplicável):</label>
+                <textarea id="options" th:field="*{options}" placeholder="Ex: [{'key':'A', 'text':'Opção A'}, {'key':'B', 'text':'Opção B'}]"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="correctAnswer">Resposta Correta (ou gabarito, ex: 'A' para múltipla escolha):</label>
+                <input type="text" id="correctAnswer" th:field="*{correctAnswer}" />
+            </div>
+
+            <div class="form-group">
+                <label for="grade">Pontuação da Questão:</label>
+                <input type="number" id="grade" th:field="*{grade}" step="0.1" min="0" value="0.0"/>
+            </div>
+
+            <div class="form-group">
+                <label for="examSequence">Ordem na Prova:</label>
+                <input type="number" id="examSequence" th:field="*{examSequence}" min="1" value="1"/>
+            </div>
+
+            <div class="form-group">
+                <button type="submit">Adicionar Questão</button>
+            </div>
+        </form>
+    </div>
+
+    <hr/>
+    <h3>Questões Cadastradas (<span th:text="${#lists.size(listaQuestoes)}">0</span>)</h3>
+    <div th:if="${!#lists.isEmpty(listaQuestoes)}">
+        <ul class="question-list">
+            <li th:each="q : ${listaQuestoes}">
+                <strong th:text="${q.examSequence + '. (' + q.exerciseType.toString().replace('_',' ') + ') - ' + q.grade + 'pts'}">1. (TIPO) - Xpts</strong>
+                <span style="white-space: pre-wrap;" th:text="${q.statement}">Enunciado da questão...</span>
+                <div th:if="${q.options != null and !q.options.isEmpty()}"><small>Opções: <span th:text="${q.options}"></span></small></div>
+                <div><small>Gabarito: <span th:text="${q.correctAnswer ?: 'N/A'}"></span></small></div>
+            </li>
+        </ul>
+    </div>
+    <div th:if="${#lists.isEmpty(listaQuestoes)}">
+        <p>Nenhuma questão cadastrada para este exame ainda.</p>
+    </div>
+    <p style="margin-top: 30px;">
+        <a th:href="@{/cursos/{id}(id=${curso.idCourse})}" class="action-button-secondary">&larr; Voltar para Detalhes do Curso</a>
+    </p>
+</div>
+</body>
+</html>

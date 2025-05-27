@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Envie sua Pergunta</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+</head>
+<body class="form-page-body">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="form-container">
+    <h1>Envie sua Pergunta</h1>
+    <p>Tem alguma dúvida? Preencha o formulário abaixo e nossa equipe entrará em contato assim que possível.</p>
+
+    <div th:if="${sucesso_pergunta}" class="success-message" th:text="${sucesso_pergunta}"></div>
+    <div th:if="${erro_pergunta}" class="error-message" th:text="${erro_pergunta}"></div>
+
+    <form th:action="@{/contato/enviar}" method="post">
+        <div class="form-group">
+            <label for="nomeVisitante">Seu Nome (Opcional):</label>
+            <input type="text" id="nomeVisitante" name="nomeVisitante" th:value="${nomeVisitantePreservado}" />
+        </div>
+
+        <div class="form-group">
+            <label for="emailVisitante">Seu E-mail (Obrigatório):</label>
+            <input type="email" id="emailVisitante" name="emailVisitante" th:value="${emailVisitantePreservado}" required />
+        </div>
+
+        <div class="form-group">
+            <label for="textoPergunta">Sua Pergunta (Obrigatório):</label>
+            <textarea id="textoPergunta" name="textoPergunta" rows="5" th:text="${textoPerguntaPreservado}" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="button">Enviar Pergunta</button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

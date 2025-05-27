@@ -1,0 +1,22 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ensinoremoto_tcc
+      MYSQL_USER: leonardo
+      MYSQL_PASSWORD: leonardo
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - ead-network
+
+volumes:
+  mysql_data:
+
+networks:
+  ead-network:
+    driver: bridge
