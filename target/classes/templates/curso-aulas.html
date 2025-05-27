@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <title th:text="${curso != null ? 'Aulas do Curso: ' + curso.title : 'Aulas do Curso'}"></title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; }
+        .navbar { background-color: #007bff; padding: 10px 20px; color: white; display: flex; justify-content: space-between; align-items: center; }
+        .navbar a { color: white; text-decoration: none; margin-left: 15px; }
+        .navbar .brand { font-size: 1.5em; font-weight: bold; }
+        .container { max-width: 900px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h2 { color: #0056b3; }
+        .breadcrumb a { color: #007bff; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .lesson-list { list-style-type: none; padding: 0; }
+        .lesson-list li { background-color: #f9f9f9; margin-bottom: 10px; border: 1px solid #eee; border-radius: 5px; transition: background-color 0.3s ease; }
+        .lesson-list li:hover { background-color: #e9ecef; }
+        .lesson-list a { display: block; padding: 15px; text-decoration: none; color: #333; font-size: 1.1em; }
+        .lesson-list .lesson-order { font-weight: bold; color: #007bff; margin-right: 10px; }
+        .no-lessons { text-align: center; font-size: 1.1em; color: #777; margin-top: 20px; }
+        .error-message { color: red; margin-bottom:15px; }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container">
+    <div th:if="${erro_geral}" class="error-message" th:text="${erro_geral}"></div>
+
+    <div th:if="${curso}">
+        <p class="breadcrumb">
+            <a th:href="@{/cursos}">Todos os Cursos</a> &gt;
+            <a th:href="@{/cursos/{id}(id=${curso.idCourse})}" th:text="${curso.title}">Nome do Curso</a> &gt;
+            Aulas
+        </p>
+
+        <h1>Aulas do Curso: <span th:text="${curso.title}"></span></h1>
+
+        <div th:if="${aulas != null and not #lists.isEmpty(aulas)}">
+            <ul class="lesson-list">
+                <li th:each="aula, iterStat : ${aulas}">
+                    <a th:href="@{/cursos/{idCurso}/aulas/{idAula}(idCurso=${curso.idCourse}, idAula=${aula.classroomId})}">
+                        <span class. ="lesson-order" th:text="${aula.sequence != 0 ? aula.sequence : iterStat.count} + '.'">1.</span> <span th:text="${aula.title}">Título da Aula</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div th:if="${aulas == null or #lists.isEmpty(aulas)}" class="no-lessons">
+            <p>Nenhuma aula disponível para este curso no momento.</p>
+        </div>
+    </div>
+    <div th:unless="${curso}">
+        <p th:if="${!erro_geral}">Curso não especificado ou não encontrado.</p>
+    </div>
+    <p style="margin-top: 20px;">
+        <a th:if="${curso}" th:href="@{/cursos/{id}(id=${curso.idCourse})}" class="button">&larr; Voltar para Detalhes do Curso</a>
+        <a th:unless="${curso}" th:href="@{/cursos}" class="button">&larr; Voltar para Lista de Cursos</a>
+    </p>
+</div>
+</body>
+</html>

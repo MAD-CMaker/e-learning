@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <title th:text="'Gerenciar Aula: ' + ${aula.title} + ' - Curso: ' + ${curso.title}"></title>
+    <style>
+        /* Reutilize estilos ou adicione novos */
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; }
+        .navbar { background-color: #007bff; padding: 10px 20px; color: white; display: flex; justify-content: space-between; align-items: center; }
+        .navbar a { color: white; text-decoration: none; margin-left: 15px; }
+        .navbar .brand { font-size: 1.5em; font-weight: bold; }
+        .container { max-width: 900px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h2, h3 { color: #0056b3; }
+        .breadcrumb a { color: #007bff; }
+        .form-section { margin-bottom: 30px; padding: 20px; border: 1px solid #eee; border-radius: 5px; background-color: #fdfdfd; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input[type="text"],
+        .form-group textarea,
+        .form-group select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .form-group textarea { min-height: 70px; }
+        .form-group button { padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .form-group button:hover { background-color: #218838; }
+        .exercise-list li { padding: 5px 0; border-bottom: 1px dotted #eee; }
+        .error-message { color: red; margin-bottom:10px; }
+        .success-message { color: green; margin-bottom:10px; }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container">
+    <p class="breadcrumb">
+        <a th:href="@{/cursos}">Cursos</a> &gt;
+        <a th:href="@{/cursos/{id}(id=${curso.idCourse})}" th:text="${curso.title}">Nome Curso</a> &gt;
+        <a th:href="@{/cursos/{idCurso}/aulas(idCurso=${curso.idCourse})}">Aulas</a> &gt;
+        Gerenciar Aula: <span th:text="${aula.title}"></span>
+    </p>
+
+    <h1>Gerenciar Aula: <span th:text="${aula.title}"></span></h1>
+    <p><strong>Descrição da Aula:</strong> <span th:text="${aula.description ?: 'N/A'}"></span></p>
+    <p><strong>Conteúdo URL:</strong> <span th:text="${aula.contentURL ?: 'N/A'}"></span></p>
+    <p><strong>Ordem:</strong> <span th:text="${aula.sequence ?: 'N/A'}"></span></p> <hr/>
+
+    <div class="form-section">
+        <h3>Adicionar Novo Exercício</h3>
+        <div th:if="${erro_exercicio}" class="error-message" th:text="${erro_exercicio}"></div>
+        <div th:if="${sucesso_exercicio}" class="success-message" th:text="${sucesso_exercicio}"></div>
+
+        <form th:action="@{/cursos/{idCurso}/aulas/{idAula}/exercicios/salvar(idCurso=${curso.idCourse}, idAula=${aula.classroomId})}" th:object="${novoExercicio}" method="post">
+            <div class="form-group">
+                <label for="statement">Enunciado:</label>
+                <textarea id="statement" th:field="*{statement}" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="exerciseType">Tipo de Exercício:</label>
+                <select id="exerciseType" th:field="*{exerciseType}" required>
+                    <option value="">Selecione o tipo...</option>
+                    <option th:each="tipo : ${tiposExercicio}"
+                            th:value="${tipo}"
+                            th:text="${tipo.toString().replace('_', ' ')}">MULTIPLA_ESCOLHA</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="options">Opções (ex: JSON para múltipla escolha, se aplicável):</label>
+                <textarea id="options" th:field="*{options}" placeholder="Ex: [{'a':'Op1'},{'b':'Op2'}]"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="correctAnswer">Resposta Correta (ou gabarito):</label>
+                <input type="text" id="correctAnswer" th:field="*{correctAnswer}" />
+            </div>
+            <div class="form-group">
+                <button type="submit">Salvar Exercício</button>
+            </div>
+        </form>
+    </div>
+
+    <hr/>
+    <h3>Exercícios Cadastrados Nesta Aula</h3>
+    <div th:if="${exercicios != null and not #lists.isEmpty(exercicios)}">
+        <ul class="exercise-list">
+            <li th:each="ex : ${exercicios}">
+                <strong><span th:text="${ex.exerciseType.toString().replace('_', ' ')}"></span>:</strong>
+                <span th:text="${ex.statement}"></span>
+            </li>
+        </ul>
+    </div>
+    <div th:if="${exercicios == null or #lists.isEmpty(exercicios)}">
+        <p>Nenhum exercício cadastrado para esta aula ainda.</p>
+    </div>
+    <p style="margin-top:20px;"><a th:href="@{/cursos/{id}/aulas(id=${curso.idCourse})}">Voltar para Lista de Aulas do Curso</a></p>
+</div>
+</body>
+</html>

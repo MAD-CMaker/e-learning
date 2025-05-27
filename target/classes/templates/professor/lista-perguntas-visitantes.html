@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Perguntas dos Visitantes</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container">
+    <h1>Perguntas dos Visitantes</h1>
+
+    <div th:if="${erro_geral}" class="error-message" th:text="${erro_geral}"></div>
+    <div th:if="${sucesso_global}" class="success-message" th:text="${sucesso_global}"></div>
+
+    <div th:if="${listaPerguntasVisitantes != null and not #lists.isEmpty(listaPerguntasVisitantes)}">
+        <div th:each="pergunta : ${listaPerguntasVisitantes}"
+             th:classappend="${pergunta.answer != null ? 'answered' : 'unanswered'}" class="question-card">
+
+            <div class="question-info">
+                <p><strong>De:</strong> <span th:text="${pergunta.visitorName ?: 'Anônimo'}"></span>
+                    (<a th:href="'mailto:' + ${pergunta.visitorEmail}" th:text="${pergunta.visitorEmail}"></a>)</p>
+                <p><strong>Data:</strong> <span th:text="${#temporals.format(pergunta.answerHour, 'dd/MM/yyyy HH:mm')}"></span></p>
+            </div>
+
+            <h4>Pergunta:</h4>
+            <p class="question-text" th:text="${pergunta.questionText}"></p>
+
+            <div th:if="${pergunta.answer != null}" class="existing-answer">
+                <p><strong>Sua Resposta:</strong></p>
+                <p style="white-space: pre-wrap;" th:text="${pergunta.answer}"></p>
+                <p style="font-size: 0.8em; color: #777;">
+                    Respondida em <span th:if="${pergunta.answerHour}" th:text="${#temporals.format(pergunta.answerHour, 'dd/MM/yyyy HH:mm')}"></span>
+                    <span th:if="${pergunta.professorResponsibleId}"> por Professor ID <span th:text="${pergunta.professorResponsibleId}"></span></span>
+                </p>
+            </div>
+
+            <div th:if="${pergunta.answer == null and session.usuarioLogado != null and session.usuarioLogado.userType == T(com.elearning.remoteensine.model.enums.UserType).PROFESSOR}" class="answer-form">
+                <form th:action="@{/professor/perguntas-visitantes/{idPergunta}/responder(idPergunta=${pergunta.questionId})}" method="post">
+                    <div>
+                        <label th:for="'textoResposta-' + ${pergunta.questionId}">Responder:</label>
+                        <textarea th:id="'textoResposta-' + ${pergunta.questionId}" name="textoResposta" rows="3" required></textarea>
+                    </div>
+                    <div style="margin-top:5px;">
+                        <button type="submit">Enviar Resposta</button>
+                    </div>
+                </form>
+            </div>
+            <div th:with="errorKey='erro_resposta_' + ${pergunta.questionId}">
+                <div th:if="${#vars[errorKey] != null}" th:text="${#vars[errorKey]}" class="error-message"></div>
+            </div>
+            <div th:with="successKey='sucesso_resposta_' + ${pergunta.questionId}">
+                <div th:if="${#vars[successKey] != null}" th:text="${#vars[successKey]}" class="success-message"></div>
+            </div>
+        </div>
+    </div>
+    <div th:if="${listaPerguntasVisitantes == null or #lists.isEmpty(listaPerguntasVisitantes)}">
+        <p>Nenhuma pergunta de visitante no momento.</p>
+    </div>
+</div>
+</body>
+</html>
