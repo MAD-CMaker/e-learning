@@ -16,8 +16,8 @@
         <ul class="profile-info">
             <li><strong>Nome:</strong> <span th:text="${usuarioPerfil.name}">Nome do Usuário</span></li> <li><strong>Email:</strong> <span th:text="${usuarioPerfil.email}">email@example.com</span></li>
             <li><strong>Tipo de Usuário:</strong>
-                <span th:if="${usuarioPerfil.userType == T(com.elearning.remoteensine.model.enums.UserType).STUDENT}">Aluno</span>
-                <span th:if="${usuarioPerfil.userType == T(com.elearning.remoteensine.model.enums.UserType).PROFESSOR}">Professor</span>
+                <span th:if="${usuarioPerfil.userType.name() == 'STUDENT'}">Aluno</span>
+                <span th:if="${usuarioPerfil.userType.name() == 'PROFESSOR'}">Professor</span>
             </li>
 
             <li th:if="${isProfessorProfile and usuarioPerfil.specialization != null}"> <strong>Especialização:</strong> <span th:text="${usuarioPerfil.specialization}">Especialização</span>

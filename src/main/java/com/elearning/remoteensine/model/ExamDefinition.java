@@ -12,6 +12,7 @@ public class ExamDefinition {
   private LocalDateTime creationData;
   private LocalDateTime updateData;
   private boolean published;
+  private boolean isExamAnswered;
   private List<ExamQuestion> questions;
 
 
@@ -81,6 +82,14 @@ public class ExamDefinition {
   }
   public void setPublished(boolean published) {
     this.published = published;
+  }
+
+  public boolean isExamAnswered() {
+    return isExamAnswered;
+  }
+
+  public void setExamAnswered(boolean isExamAnswered) {
+    this.isExamAnswered = isExamAnswered;
   }
 
   public List<ExamQuestion> getQuestions() {

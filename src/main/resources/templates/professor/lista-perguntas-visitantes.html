@@ -37,7 +37,7 @@
                 </p>
             </div>
 
-            <div th:if="${pergunta.answer == null and session.usuarioLogado != null and session.usuarioLogado.userType == T(com.elearning.remoteensine.model.enums.UserType).PROFESSOR}" class="answer-form">
+            <div th:if="${pergunta.answer == null and session.usuarioLogado != null and session.usuarioLogado.userType.name() == 'PROFESSOR'}" class="answer-form">
                 <form th:action="@{/professor/perguntas-visitantes/{idPergunta}/responder(idPergunta=${pergunta.questionId})}" method="post">
                     <div>
                         <label th:for="'textoResposta-' + ${pergunta.questionId}">Responder:</label>

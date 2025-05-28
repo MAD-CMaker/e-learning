@@ -29,7 +29,7 @@
 <body>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div class="container" th:if="${usuarioLogado != null && usuarioLogado.userType == T(com.elearning.remoteensine.model.enums.UserType).STUDENT}" style="margin-top: 20px; padding: 15px; background-color: #eef; border-radius: 5px;">
+<div class="container" th:if="${usuarioLogado != null && usuarioLogado.userType.name() == 'STUDENT'}" style="margin-top: 20px; padding: 15px; background-color: #eef; border-radius: 5px;">
     <h4>Newsletter</h4>
     <p>Seu e-mail para newsletter: <strong th:text="${usuarioLogado.email}"></strong></p>
     <div th:if="${sucesso_global}" class="success-message" th:text="${sucesso_global}" style="color: green; margin-bottom: 10px;"></div>
@@ -51,7 +51,7 @@
 
 <div class="container"> <h1>Nossos Cursos</h1>
 
-    <div th:if="${usuarioLogado != null && usuarioLogado.userType == T(com.elearning.remoteensine.model.enums.UserType).PROFESSOR}">
+    <div th:if="${usuarioLogado != null && usuarioLogado.userType.name() == 'PROFESSOR'}">
         <a th:href="@{/cursos/novo}" class="button" style="align-items: center;">Criar Novo Curso</a>
     </div>
     <div th:if="${erro_cursos}" class="error-message" th:text="${erro_cursos}"></div>

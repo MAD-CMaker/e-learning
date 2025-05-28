@@ -9,7 +9,7 @@
             <a th:href="@{/contato}">Contato</a>
             <th:block th:if="${session.usuarioLogado != null}">
                 <a th:href="@{/perfil}">Meu Perfil</a>
-                <a th:if="${session.usuarioLogado.userType == T(com.elearning.remoteensine.model.enums.UserType).PROFESSOR}"
+                <a th:if="${session.usuarioLogado.userType.name().equals('PROFESSOR')}"
                    th:href="@{/professor/perguntas-visitantes}">Perguntas Visitantes</a>
                 <form th:action="@{/logout}" method="post" style="display: inline;">
                     <button type="submit" class="navbar-button logout-button">Logout</button>
