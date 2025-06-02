@@ -19,16 +19,16 @@ public class  ExamDAO {
    * incluindo violação da restrição UNIQUE (aluno já avaliou o curso).
    */
   public Exam saveExam(Exam exam) throws SQLException {
-    String sql = "INSERT INTO exams_courses (course_id, id_exam_definition, student_id, grade, comment, hour_date) " +
-        "VALUES (?, ?, ?, ?, ?, ?)";
-    try (Connection conn = DatabaseConnector.getConnection();
-         PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+    String sql = "INSERT INTO exams_courses (course_id, id_exam_definition, student_id, grade, comment, hour_date,submited) " +
+        "VALUES (?, ?, ?, ?, ?, ?, ?)";
+    try (Connection conn = DatabaseConnector.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
       pstmt.setInt(1, exam.getCourseId());
       pstmt.setInt(2, exam.getIdExamDefinition());
       pstmt.setInt(3, exam.getStudentId());
       pstmt.setInt(4, exam.getGrade());
       pstmt.setString(5, exam.getComment());
       pstmt.setTimestamp(6, Timestamp.valueOf(exam.getHourDate() != null ? exam.getHourDate() : LocalDateTime.now()));
+      pstmt.setBoolean(7, exam.isSubmitted());
       int affectedRows = pstmt.executeUpdate();
       if (affectedRows == 0) {
         throw new SQLException("Falha ao salvar tentativa do exame, nenhuma linha afetada.");

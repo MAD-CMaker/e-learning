@@ -3,10 +3,15 @@ package com.elearning.remoteensine.dao;
 import com.elearning.remoteensine.model.ExamQuestion;
 import com.elearning.remoteensine.model.enums.ExerciseType;
 import com.elearning.remoteensine.util.DatabaseConnector;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class ExamQuestionDAO {
 
@@ -119,6 +124,18 @@ public class ExamQuestionDAO {
     question.setCorrectAnswer(rs.getString("correct_answer"));
     question.setGrade(rs.getDouble("grade"));
     question.setExamSequence(rs.getInt("exam_sequence"));
+    question.setParsedOptions(getParsedOptionsToShow(rs.getString("options")));
     return question;
+  }
+
+  private List<Map<String, String>> getParsedOptionsToShow(String options) {
+    if(options == null) return null;
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+      return mapper.readValue(options, new TypeReference<List<Map<String, String>>>() {});
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      return Collections.emptyList();
+    }
   }
 }

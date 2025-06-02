@@ -7,6 +7,8 @@ import com.elearning.remoteensine.service.*;
 
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.elearning.remoteensine.model.enums.ExerciseType.MULTIPLA_ESCOLHA;
 
 @Controller
 @RequestMapping("/cursos")
@@ -141,7 +149,7 @@ public class CourseController {
           course.getPrice(),
           course.getCategory(),
           course.getHoursLoad(),
-          course.getPresentationVideo()
+          getYoutubeVideoIdFromUrlProvided(course.getPresentationVideo())
       );
       redirectAttributes.addFlashAttribute("sucesso_curso", "Curso '" + course.getTitle() + "' criado com sucesso!");
       return "redirect:/cursos";
@@ -200,7 +208,7 @@ public class CourseController {
             podeInteragir = isAlunoMatriculado;
             podeComentar = isAlunoMatriculado;
             if (isAlunoMatriculado) {
-              provasDisponiveisParaAluno = examDefinitionService.listarDefinicoesDeProvaParaCurso(idCurso);
+              provasDisponiveisParaAluno = examDefinitionService.listarProvasPorCursoPublicadasNaoSubmetidas(idCurso);
               model.addAttribute("provasDisponiveisParaAluno", provasDisponiveisParaAluno);
             }
           }
@@ -482,10 +490,14 @@ public class CourseController {
       if (aula.getTitle() == null || aula.getTitle().trim().isEmpty()) {
         model.addAttribute("erro_aula", "O título da aula é obrigatório.");
         model.addAttribute("curso", curso);
-        return "form-aulaaaaa";
+        return "form-aula";
       }
 
       aula.setCourseId(idCurso);
+
+      if(aula.getContentURL() != null && !aula.getContentURL().trim().isEmpty()) {
+        aula.setContentURL(getYoutubeVideoIdFromUrlProvided(aula.getContentURL()));
+      }
 
       classroomService.saveOrUpdateClass(aula, idCurso, usuarioLogado.getIdUser());
 
@@ -496,12 +508,12 @@ public class CourseController {
       e.printStackTrace();
       model.addAttribute("erro_geral", "Erro de banco de dados ao salvar a aula.");
       model.addAttribute("curso", courseService.searchCourseByIdComplete(idCurso));
-      return "form-aulaaaaa";
+      return "form-aula";
     } catch (IllegalArgumentException | IllegalAccessException e) {
       e.printStackTrace();
       model.addAttribute("erro_aula", e.getMessage());
       model.addAttribute("curso", courseService.searchCourseByIdComplete(idCurso));
-      return "form-aulaaaaa";
+      return "form-aula";
     }
   }
 
@@ -754,13 +766,39 @@ public class CourseController {
         return "redirect:/cursos/" + idCurso + "/exames/" + idExamDefinition + "/questoes";
       }
 
-      if (novaQuestao.getStatement() == null || novaQuestao.getStatement().trim().isEmpty() || novaQuestao.getExerciseType() == null) {
-        model.addAttribute("erro_questao", "Enunciado e tipo de questão são obrigatórios.");
-        model.addAttribute("curso", curso);
-        model.addAttribute("examDefinition", examDef);
-        model.addAttribute("listaQuestoes", examQuestionService.getQuestionsForExamDefinition(idExamDefinition, usuarioLogado.getIdUser()));
-        model.addAttribute("tiposExercicio", ExerciseType.values());
-        return "exam/gerenciar-questoes-exame";
+      if (novaQuestao.getStatement() == null || novaQuestao.getStatement().trim().isEmpty() || novaQuestao.getExerciseType() == null)
+        return recarregarPaginaComErro(idExamDefinition, model, curso, examDef, usuarioLogado.getIdUser(),"Enunciado e tipo de questão são obrigatórios.");
+
+
+      if (novaQuestao.getExerciseType().equals(ExerciseType.MULTIPLA_ESCOLHA)) {
+        Set<String> opcoesValidas = Set.of("A", "B", "C", "D");
+
+        if (novaQuestao.getCorrectAnswer() == null || novaQuestao.getCorrectAnswer().trim().isEmpty())
+          return recarregarPaginaComErro(idExamDefinition, model, curso, examDef, usuarioLogado.getIdUser(),
+                  "É obrigatório informar a resposta correta para a questão de multipla escolha.");
+
+        if (!opcoesValidas.contains(novaQuestao.getCorrectAnswer()))
+          return recarregarPaginaComErro(idExamDefinition, model, curso, examDef, usuarioLogado.getIdUser(),
+                  "As opções de resposta devem ser apenas A, B, C ou D.");
+
+        try {
+          String optionsJson = novaQuestao.getOptions();
+          ObjectMapper mapper = new ObjectMapper();
+          List<Map<String, String>> opcoes = mapper.readValue(optionsJson, new TypeReference<List<Map<String, String>>>() {
+          });
+          for (Map<String, String> item : opcoes) {
+            if (!item.containsKey("opcao") || !item.containsKey("resposta") || item.get("opcao") == null || item.get("resposta") == null)
+              return recarregarPaginaComErro(idExamDefinition, model, curso, examDef, usuarioLogado.getIdUser(),
+                      "Cada item deve conter os campos 'opcao' (alternativa) e 'resposta'. Formato JSON inválido!");
+
+            if (!opcoesValidas.contains(item.get("opcao").trim().toUpperCase()))
+              return recarregarPaginaComErro(idExamDefinition, model, curso, examDef, usuarioLogado.getIdUser(),
+                      "As opções devem ser apenas A, B, C ou D.");
+          }
+        } catch (Exception e) {
+          return recarregarPaginaComErro(idExamDefinition, model, curso, examDef, usuarioLogado.getIdUser(),
+                  "Formato JSON inválido para resposta de multipla escolha!");
+        }
       }
 
       novaQuestao.setIdDefinitionExam(idExamDefinition);
@@ -778,10 +816,18 @@ public class CourseController {
       redirectAttributes.addFlashAttribute("sucesso_questao", "Questão adicionada com sucesso ao exame!");
 
     } catch (Exception e) {
-      e.printStackTrace();
       redirectAttributes.addFlashAttribute("erro_questao", "Erro ao adicionar questão: " + e.getMessage());
     }
     return "redirect:/cursos/" + idCurso + "/exames/" + idExamDefinition + "/questoes";
+  }
+
+  private String recarregarPaginaComErro(int idExamDefinition, Model model, Course curso, ExamDefinition examDef, int idUsuarioLogado, String mensagemErro) throws SQLException, IllegalAccessException {
+    model.addAttribute("curso", curso);
+    model.addAttribute("examDefinition", examDef);
+    model.addAttribute("listaQuestoes", examQuestionService.getQuestionsForExamDefinition(idExamDefinition, idUsuarioLogado));
+    model.addAttribute("tiposExercicio", ExerciseType.values());
+    model.addAttribute("erro_questao", mensagemErro);
+    return "exam/gerenciar-questoes-exame";
   }
 
   @GetMapping("/{idCurso}/exames/{idExamDefinition}/editar")
@@ -995,6 +1041,17 @@ public class CourseController {
 
 
     return "redirect:/cursos/" + idCurso + "#duvida-" + idDuvida;
+  }
+
+  private String getYoutubeVideoIdFromUrlProvided(String urlVideoYoutube){
+    Pattern pattern = Pattern.compile("v=([^&]+)");
+    Matcher videoIdFromUrl = pattern.matcher(urlVideoYoutube);
+    final String baseUrlYoutubeEmbed = "https://www.youtube.com/embed/";
+
+    if (videoIdFromUrl.find())
+      return baseUrlYoutubeEmbed.concat(videoIdFromUrl.group(1));
+
+    return urlVideoYoutube;
   }
 }
 

@@ -7,7 +7,6 @@ import com.elearning.remoteensine.model.Course;
 import com.elearning.remoteensine.model.ExamDefinition; // Sua classe
 import com.elearning.remoteensine.model.User;
 import com.elearning.remoteensine.model.enums.UserType; // Seu enum
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -108,17 +107,12 @@ public class ExamDefinitionService {
     }
     return examDefinitionDAO.deleteExamDefinition(idExamDefinition);
   }
-  public List<ExamDefinition> listarDefinicoesDeProvaParaCurso(int idCurso) throws SQLException {
+  public List<ExamDefinition> listarProvasPorCursoPublicadasNaoSubmetidas(int idCurso) throws SQLException {
     System.out.println("SERVICE (Aluno): Chamando DAO para buscar provas publicadas para curso ID: " + idCurso);
-    List<ExamDefinition> publisheds = examDefinitionDAO.findExamDefinitionsByCourseId(idCurso, true);
-    System.out.println("SERVICE (Aluno): DAO retornou " + (publisheds != null ? publisheds.size() : "null") + " provas (supostamente publicadas).");
-    if (publisheds != null) {
-      for (ExamDefinition ed : publisheds) {
+    List<ExamDefinition> publishedsNotAnswered = examDefinitionDAO.findExamDefinitionsNotSubmittedByCourseId(idCurso);
+    System.out.println("SERVICE (Aluno): DAO retornou " + (publishedsNotAnswered != null ? publishedsNotAnswered.size() : "null") + " provas (supostamente publicadas).");
 
-        System.out.println("SERVICE (Aluno): Prova Encontrada: " + ed.getTitle() + " (Publicada no objeto: " + ed.isPublished() + ")");
-      }
-    }
-    return publisheds;
+    return publishedsNotAnswered;
   }
 
   public List<ExamDefinition> getExamDefinitionsForCourseManagement(int idCurso, int idProfessorLogado)

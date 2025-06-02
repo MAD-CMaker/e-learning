@@ -2,6 +2,9 @@ package com.elearning.remoteensine.model;
 
 import com.elearning.remoteensine.model.enums.ExerciseType;
 
+import java.util.List;
+import java.util.Map;
+
 public class ExamQuestion {
   private int idExamQuestion;
   private int idDefinitionExam;
@@ -11,6 +14,8 @@ public class ExamQuestion {
   private String correctAnswer;
   private double grade;
   private int examSequence;
+
+  private List<Map<String, String>> parsedOptions;
 
   public ExamQuestion() {
   }
@@ -87,6 +92,14 @@ public class ExamQuestion {
 
   public void setGrade(double grade) {
     this.grade = grade;
+  }
+
+  public List<Map<String, String>> getParsedOptions() {
+    return parsedOptions;
+  }
+
+  public void setParsedOptions(List<Map<String, String>> parsedOptions) {
+    this.parsedOptions = parsedOptions;
   }
 
   @Override

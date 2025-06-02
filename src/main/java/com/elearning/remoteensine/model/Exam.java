@@ -11,6 +11,7 @@ public class Exam {
   private String comment;
   private LocalDateTime hourDate;
   private String studentName;
+  private boolean submitted;
 
   public Exam() {
     this.hourDate = LocalDateTime.now();
@@ -55,10 +56,10 @@ public class Exam {
   }
 
   public void setGrade(int grade)  {
-    if(grade >= 0 && grade <= 10){
+    if(grade >= 0 && grade <= 100){
       this.grade = grade;
     } else {
-        throw new IllegalArgumentException("Grade must be between 0 and 10");
+        throw new IllegalArgumentException("Grade must be between 0 and 100");
     }
   }
 
@@ -92,6 +93,14 @@ public class Exam {
 
   public void setIdExamDefinition(int idExamDefinition) {
     this.idExamDefinition = idExamDefinition;
+  }
+
+  public boolean isSubmitted() {
+    return submitted;
+  }
+
+  public void setSubmitted(boolean submitted) {
+    this.submitted = submitted;
   }
 
   @Override

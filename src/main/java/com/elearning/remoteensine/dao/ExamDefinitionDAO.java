@@ -87,6 +87,33 @@ public class ExamDefinitionDAO {
     return examDefs;
   }
 
+  public List<ExamDefinition> findExamDefinitionsNotSubmittedByCourseId(int idCourse) throws SQLException {
+    List<ExamDefinition> examDefs = new ArrayList<>();
+    String sql = "SELECT exd.* FROM exam_definitions exd " +
+            "LEFT JOIN exams_courses exc ON exc.id_exam_definition = exd.id_exam_definition " +
+            "WHERE exd.id_course = ? AND exd.published = TRUE AND exc.exam_id IS NULL " +
+            "ORDER BY exd.creation_date DESC";
+
+    try (Connection conn = DatabaseConnector.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      pstmt.setInt(1, idCourse);
+      try (ResultSet rs = pstmt.executeQuery()) {
+        int rowCount = 0;
+        while (rs.next()) {
+          rowCount++;
+          ExamDefinition examDef = mapResultSetToExamDefinition(rs);
+          if (examDef != null) {
+            examDefs.add(examDef);
+          }
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+      throw e;
+    }
+    return examDefs;
+  }
+
   public boolean updateExamDefinition(ExamDefinition examDef) throws SQLException {
     String sql = "UPDATE exam_definitions SET title = ?, description = ?, published = ? WHERE id_exam_definition = ?";
     try (Connection conn = DatabaseConnector.getConnection();
@@ -120,8 +147,8 @@ public class ExamDefinitionDAO {
       examDef.setTitle(rs.getString("title"));
       examDef.setDescription(rs.getString("description"));
       examDef.setPublished(rs.getBoolean("published"));
-
       Timestamp tsCreation = rs.getTimestamp("creation_date");
+
       if (tsCreation != null) {
         examDef.setCreationData(tsCreation.toLocalDateTime());
       } else {

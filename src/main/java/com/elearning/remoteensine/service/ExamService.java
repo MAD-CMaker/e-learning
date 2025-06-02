@@ -262,29 +262,25 @@ public class ExamService {
       System.err.println("SERVICE (ExamAttempt): Aluno inválido ou não é estudante. ID: " + examAttempt.getStudentId());
       throw new IllegalArgumentException("Aluno inválido para esta tentativa de exame.");
     }
-    System.out.println("SERVICE (ExamAttempt): Aluno validado: " + student.getName());
 
-    int examDefIdToValidate = examAttempt.getIdExamDefinition();
-    System.out.println("SERVICE (ExamAttempt): Validando ExamDefinition ID: " + examDefIdToValidate);
-
-    ExamDefinition examDefValidation = examDefinitionDAO.findExamDefinitionById(examDefIdToValidate);
+    ExamDefinition examDefValidation = examDefinitionDAO.findExamDefinitionById(examAttempt.getIdExamDefinition());
 
     if (examDefValidation == null) {
-      System.err.println("SERVICE (ExamAttempt): FALHA NA VALIDAÇÃO - DAO retornou NULL para ExamDefinition ID: " + examDefIdToValidate); // DEBUG
       throw new IllegalArgumentException("Definição de exame inválida para esta tentativa.");
     }
-    System.out.println("SERVICE (ExamAttempt): VALIDAÇÃO OK - ExamDefinition ID " + examDefIdToValidate + " encontrada: " + examDefValidation.getTitle()); // DEBUG
 
     if (examAttempt.getCourseId() != examDefValidation.getIdCourse()){
-      System.err.println("SERVICE (ExamAttempt): INCONSISTÊNCIA - ID do curso da tentativa (" + examAttempt.getCourseId() +
-          ") não corresponde ao ID do curso da definição do exame (" + examDefValidation.getIdCourse() + ")");
+      System.out.printf("SERVICE (ExamAttempt): INCONSISTÊNCIA - ID do curso da tentativa (%d) não corresponde ao ID do curso da definição do exame (%d)%n",
+              examAttempt.getCourseId(), examDefValidation.getIdCourse());
       throw new IllegalArgumentException("Inconsistência entre o curso da tentativa e o curso da definição do exame.");
     }
 
 
-    System.out.println("SERVICE (Exam): Salvando tentativa de exame para Aluno ID: " + examAttempt.getStudentId() +
-        ", Definição de Exame ID: " + examAttempt.getIdExamDefinition() +
-        ", Nota: " + examAttempt.getGrade());
+    System.out.printf("SERVICE (Exam): Salvando tentativa de exame para Aluno ID: %d, Definição de Exame ID: %d, Nota %d%n",
+            examAttempt.getStudentId(),
+            examAttempt.getIdExamDefinition(),
+            examAttempt.getGrade());
+
     return examDAO.saveExam(examAttempt);
   }
 }
