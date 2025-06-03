@@ -11,43 +11,16 @@ import java.sql.SQLException;
 @Component
 public class DatabaseConnector {
 
-//  @Value("${spring.datasource.url}")
-  private String URL = "mysql://root:GYGshnhdYoehknkecZbOAGttyxPYsXMi@mysql-elearning.railway.internal:3306/railway";
+  @Value("${spring.datasource.url}")
+  private String URL;
 
-////  @Value("${spring.datasource.username}")
-//  private String USER = root; //
-//
-////  @Value("${spring.datasource.password}")
-//  private String PASSWORD;
+  @Value("${spring.datasource.username}")
+  private String USER; //
 
-  @Value("${spring.datasource.driver-class-name}")
-  private String DRIVER_CLASSNAME;
+  @Value("${spring.datasource.password}")
+  private String PASSWORD;
 
   public Connection getConnection() throws SQLException {
-    try {
-      // Registro o driver JDBC do MySQL.
-      Class.forName(DRIVER_CLASSNAME);
-      System.out.printf("URL UTILIZIDA PARA CONEXÃO: " + URL);
-//      System.out.printf("USER UTILIZIDA PARA CONEXÃO: " + USER);
-//      System.out.printf("PASSWORD UTILZIADA PARA CONEXÃO: " + PASSWORD);
-//      return DriverManager.getConnection(URL, USER, PASSWORD);
-      return DriverManager.getConnection(URL);
-    } catch (ClassNotFoundException e) {
-      throw new SQLException("Driver JDBC do MySQL não encontrado! Verifique o Classpath.", e);
-    }
+      return DriverManager.getConnection(URL, USER, PASSWORD);
   }
-
-//  // Testar conexão
-//  public static void main(String[] args) {
-//    try (Connection connection = getConnection()) {
-//      if (connection != null) {
-//        System.out.println("Conexão com o banco de dados estabelecida com sucesso!");
-//      } else {
-//        System.out.println("Falha ao estabelecer conexão com o banco de dados.");
-//      }
-//    } catch (SQLException e) {
-//      System.err.println("Erro ao conectar com o banco de dados: " + e.getMessage());
-//      e.printStackTrace();
-//    }
-//  }
 }
