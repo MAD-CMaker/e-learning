@@ -27,6 +27,9 @@ public class DatabaseConnector {
     try {
       // Registro o driver JDBC do MySQL.
       Class.forName(DRIVER_CLASSNAME);
+      System.out.printf("URL UTILIZIDA PARA CONEXÃO: " + URL);
+      System.out.printf("USER UTILIZIDA PARA CONEXÃO: " + USER);
+      System.out.printf("PASSWORD UTILZIADA PARA CONEXÃO: " + PASSWORD);
       return DriverManager.getConnection(URL, USER, PASSWORD);
     } catch (ClassNotFoundException e) {
       throw new SQLException("Driver JDBC do MySQL não encontrado! Verifique o Classpath.", e);
