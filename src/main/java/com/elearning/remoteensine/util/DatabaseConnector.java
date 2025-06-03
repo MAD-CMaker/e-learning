@@ -21,7 +21,7 @@ public class DatabaseConnector {
   private String PASSWORD;
 
   @Value("${spring.datasource.driver-class-name}")
-  private String DRIVER_CLASSNAME = "com.mysql.cj.jdbc.Driver";
+  private String DRIVER_CLASSNAME;
 
   public Connection getConnection() throws SQLException {
     try {
