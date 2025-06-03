@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 
 import static com.elearning.remoteensine.model.enums.ExerciseType.MULTIPLA_ESCOLHA;
 
-@RestController
+@Controller
 @RequestMapping("/cursos")
 public class CourseController {
   private final CourseService courseService;
