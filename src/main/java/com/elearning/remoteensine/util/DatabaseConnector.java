@@ -21,6 +21,12 @@ public class DatabaseConnector {
   private String PASSWORD;
 
   public Connection getConnection() throws SQLException {
-      return DriverManager.getConnection(URL, USER, PASSWORD);
+    System.out.println("URL utilizada: " + URL);
+    System.out.println("USER: " + USER);
+    System.out.println("Tentando conectar...");
+    Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+    System.out.println("✅ Conectado com sucesso!");
+    return conn;
+//      return DriverManager.getConnection(URL, USER, PASSWORD);
   }
 }

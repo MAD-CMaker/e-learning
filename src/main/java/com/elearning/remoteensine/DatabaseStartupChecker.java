@@ -2,6 +2,7 @@ package com.elearning.remoteensine;
 
 import com.elearning.remoteensine.util.DatabaseConnector;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -12,18 +13,15 @@ import java.sql.SQLException;
 @Component
 public class DatabaseStartupChecker {
 
-    private final DatabaseConnector databaseConnector;
+    @Autowired
+    private DatabaseConnector databaseConnector;
 
-    public DatabaseStartupChecker(DatabaseConnector databaseConnector) {
-        this.databaseConnector = databaseConnector;
-    }
-
-    @EventListener(ApplicationReadyEvent.class)
-    public void checkDatabaseConnection() {
+    @PostConstruct
+    public void init() {
         try (Connection conn = databaseConnector.getConnection()) {
-            System.out.println("✅ Conexão com o banco estabelecida com sucesso no startup.");
+            System.out.println("Conexão com banco OK.");
         } catch (SQLException e) {
-            System.err.println("❌ Falha ao conectar com o banco no startup: " + e.getMessage());
+            System.err.println("Erro na conexão: " + e.getMessage());
         }
     }
 }
