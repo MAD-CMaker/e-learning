@@ -1,5 +1,6 @@
 package com.elearning.remoteensine;
 
+import com.elearning.remoteensine.util.DatabaseConnector;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
