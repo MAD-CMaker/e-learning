@@ -5,8 +5,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ensinoremoto_tcc
-      MYSQL_USER: leonardo
-      MYSQL_PASSWORD: leonardo
+      MYSQL_USER: mysqluser
+      MYSQL_PASSWORD: mysqlpass
     ports:
       - "3306:3306"
     volumes:

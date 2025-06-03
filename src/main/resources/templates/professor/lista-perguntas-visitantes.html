@@ -17,7 +17,7 @@
 
     <div th:if="${listaPerguntasVisitantes != null and not #lists.isEmpty(listaPerguntasVisitantes)}">
         <div th:each="pergunta : ${listaPerguntasVisitantes}"
-             th:classappend="${pergunta.answer != null ? 'answered' : 'unanswered'}" class="question-card">
+             th:classappend="${pergunta.answer != null ? 'answered' : 'unanswered'}" class="question-card data-line-separator">
 
             <div class="question-info">
                 <p><strong>De:</strong> <span th:text="${pergunta.visitorName ?: 'Anônimo'}"></span>
@@ -33,15 +33,16 @@
                 <p style="white-space: pre-wrap;" th:text="${pergunta.answer}"></p>
                 <p style="font-size: 0.8em; color: #777;">
                     Respondida em <span th:if="${pergunta.answerHour}" th:text="${#temporals.format(pergunta.answerHour, 'dd/MM/yyyy HH:mm')}"></span>
-                    <span th:if="${pergunta.professorResponsibleId}"> por Professor ID <span th:text="${pergunta.professorResponsibleId}"></span></span>
+<!--                    <span th:if="${pergunta.professorResponsibleId}"> por Professor ID <span th:text="${pergunta.professorResponsibleId}"></span></span>-->
                 </p>
             </div>
 
-            <div th:if="${pergunta.answer == null and session.usuarioLogado != null and session.usuarioLogado.userType.name() == 'PROFESSOR'}" class="answer-form">
+            <div th:if="${pergunta.answer == null and session.usuarioLogado != null and session.usuarioLogado.userType.name() == 'PROFESSOR'}" class="form-group">
                 <form th:action="@{/professor/perguntas-visitantes/{idPergunta}/responder(idPergunta=${pergunta.questionId})}" method="post">
                     <div>
                         <label th:for="'textoResposta-' + ${pergunta.questionId}">Responder:</label>
-                        <textarea th:id="'textoResposta-' + ${pergunta.questionId}" name="textoResposta" rows="3" required></textarea>
+                        <textarea th:id="'textoResposta-' + ${pergunta.questionId}" name="textoResposta"
+                                  rows="5" style="width: 100%; padding: 8px; box-sizing: border-box; resize: none;" required></textarea>
                     </div>
                     <div style="margin-top:5px;">
                         <button type="submit">Enviar Resposta</button>

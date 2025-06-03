@@ -15,7 +15,7 @@
     <div th:if="${sucesso_pergunta}" class="success-message" th:text="${sucesso_pergunta}"></div>
     <div th:if="${erro_pergunta}" class="error-message" th:text="${erro_pergunta}"></div>
 
-    <form th:action="@{/contato/enviar}" method="post">
+    <form th:action="@{/enviar}" method="post">
         <div class="form-group">
             <label for="nomeVisitante">Seu Nome (Opcional):</label>
             <input type="text" id="nomeVisitante" name="nomeVisitante" th:value="${nomeVisitantePreservado}" />

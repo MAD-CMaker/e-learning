@@ -87,7 +87,6 @@ public class VisitorQuestionService {
     Professor professor = (Professor) userProfessor;
 
     question.answerQuestionByProfessor(questionText, professor);
-    // O método adicionarRespostaPeloProfessor já atualiza dataHoraResposta e idResponsavelResposta.
 
     if (questionDAO.updateQuestion(question)) {
       return question;

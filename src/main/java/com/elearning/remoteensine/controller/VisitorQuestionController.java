@@ -116,7 +116,7 @@ public class VisitorQuestionController {
 
     try {
       visitorQuestionService.answerQuestion(idPergunta, usuarioLogado.getIdUser(), textoResposta);
-      redirectAttributes.addFlashAttribute("sucesso_resposta_" + idPergunta, "Resposta enviada com sucesso para a pergunta ID " + idPergunta + "!");
+      redirectAttributes.addFlashAttribute("sucesso_resposta_" + idPergunta, "Resposta enviada com sucesso!");
     } catch (Exception e) { // SQLException, IllegalArgumentException
       e.printStackTrace();
       redirectAttributes.addFlashAttribute("erro_resposta_" + idPergunta, "Erro ao enviar resposta: " + e.getMessage());
