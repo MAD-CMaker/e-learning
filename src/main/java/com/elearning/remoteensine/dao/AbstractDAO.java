@@ -1,7 +1,6 @@
 package com.elearning.remoteensine.dao;
 
 import com.elearning.remoteensine.util.DatabaseConnector;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Connection;
 import java.sql.SQLException;
