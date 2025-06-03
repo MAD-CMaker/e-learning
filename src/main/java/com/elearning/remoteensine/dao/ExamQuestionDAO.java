@@ -6,6 +6,7 @@ import com.elearning.remoteensine.util.DatabaseConnector;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,13 +14,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class ExamQuestionDAO {
+@Repository
+public class ExamQuestionDAO extends AbstractDAO {
+
+  public ExamQuestionDAO(DatabaseConnector databaseConnector) {
+    super(databaseConnector);
+  }
 
   public ExamQuestion saveQuestion(ExamQuestion question) throws SQLException {
     String sql = "INSERT INTO exam_questions (id_exam_definition, statement, exercise_type, options, correct_answer, grade, exam_sequence) " +
         "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
       pstmt.setInt(1, question.getIdDefinitionExam());
@@ -50,7 +56,7 @@ public class ExamQuestionDAO {
   public ExamQuestion findQuestionById(int idExamQuestion) throws SQLException {
     String sql = "SELECT * FROM exam_questions WHERE id_exam_question = ?";
     ExamQuestion question = null;
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idExamQuestion);
       try (ResultSet rs = pstmt.executeQuery()) {
@@ -65,7 +71,7 @@ public class ExamQuestionDAO {
   public List<ExamQuestion> findQuestionsByExamDefinitionId(int idExamDefinition) throws SQLException {
     List<ExamQuestion> questions = new ArrayList<>();
     String sql = "SELECT * FROM exam_questions WHERE id_exam_definition = ? ORDER BY exam_sequence ASC, id_exam_question ASC";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idExamDefinition);
       try (ResultSet rs = pstmt.executeQuery()) {
@@ -81,7 +87,7 @@ public class ExamQuestionDAO {
     String sql = "UPDATE exam_questions SET statement = ?, exercise_type = ?, options = ?, " +
         "correct_answer = ?, grade = ?, exam_sequence = ? " +
         "WHERE id_exam_question = ? AND id_exam_definition = ?"; // id_exam_definition para segurança
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setString(1, question.getStatement());
       pstmt.setString(2, question.getExerciseType().name());
@@ -97,7 +103,7 @@ public class ExamQuestionDAO {
 
   public boolean deleteQuestion(int idExamQuestion) throws SQLException {
     String sql = "DELETE FROM exam_questions WHERE id_exam_question = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idExamQuestion);
       return pstmt.executeUpdate() > 0;
@@ -106,7 +112,7 @@ public class ExamQuestionDAO {
 
   public int deleteQuestionsByExamDefinitionId(int idExamDefinition) throws SQLException {
     String sql = "DELETE FROM exam_questions WHERE id_exam_definition = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idExamDefinition);
       return pstmt.executeUpdate();

@@ -2,13 +2,20 @@ package com.elearning.remoteensine.dao;
 
 import com.elearning.remoteensine.model.Comment;
 import com.elearning.remoteensine.util.DatabaseConnector;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommentDAO {
+@Repository
+public class CommentDAO extends AbstractDAO {
+
+  public CommentDAO(DatabaseConnector databaseConnector) {
+    super(databaseConnector);
+  }
+
   /**
    * Salva um novo comentário no banco de dados.
    *
@@ -19,7 +26,7 @@ public class CommentDAO {
   public Comment saveComment(Comment comment) throws SQLException {
     String sql = "INSERT INTO courses_comments (course_id, student_id, text, hour_date) VALUES (?, ?, ?, ?)";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
       pstmt.setInt(1, comment.getCourseId());
@@ -55,7 +62,7 @@ public class CommentDAO {
     String sql = "SELECT * FROM courses_comments WHERE comment_id = ?";
     Comment comment = null;
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setInt(1, idComment);
@@ -80,7 +87,7 @@ public class CommentDAO {
     String sql = "SELECT * FROM courses_comments WHERE course_id = ? ORDER BY hour_date DESC";
 
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setInt(1, idCourse);
@@ -104,7 +111,7 @@ public class CommentDAO {
     List<Comment> comments = new ArrayList<>();
     String sql = "SELECT * FROM courses_comments WHERE student_id = ? ORDER BY hour_date DESC";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setInt(1, idStudent);
@@ -129,7 +136,7 @@ public class CommentDAO {
    */
   public boolean updateComment(Comment comment) throws SQLException {
     String sql = "UPDATE courses_comments SET text = ?, hour_date = ? WHERE comment_id = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setString(1, comment.getText());
@@ -149,7 +156,7 @@ public class CommentDAO {
    */
   public boolean deleteComment(int idComment) throws SQLException {
     String sql = "DELETE FROM courses_comments WHERE comment_id = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idComment);
       return pstmt.executeUpdate() > 0;

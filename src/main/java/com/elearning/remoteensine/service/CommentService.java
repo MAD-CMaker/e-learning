@@ -23,11 +23,11 @@ public class CommentService {
   private CourseDAO courseDAO;
   private EnrollDAO enrollDAO;
 
-  public CommentService() {
-    this.commentDAO = new CommentDAO();
-    this.userDAO = new UserDAO();
-    this.courseDAO = new CourseDAO();
-    this.enrollDAO = new EnrollDAO();
+  public CommentService(CommentDAO commentDAO, UserDAO userDAO, CourseDAO courseDAO, EnrollDAO enrollDAO) {
+    this.commentDAO = commentDAO;
+    this.userDAO = userDAO;
+    this.courseDAO = courseDAO;
+    this.enrollDAO = enrollDAO;
   }
 
   /**

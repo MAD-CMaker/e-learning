@@ -2,12 +2,19 @@ package com.elearning.remoteensine.dao;
 
 import com.elearning.remoteensine.model.Classroom;
 import com.elearning.remoteensine.util.DatabaseConnector;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClassroomDAO {
+@Repository
+public class ClassroomDAO extends AbstractDAO{
+
+  public ClassroomDAO(DatabaseConnector databaseConnector) {
+    super(databaseConnector);
+  }
+
   /**
    * Salva uma nova aula no banco de dados.
    *
@@ -18,7 +25,7 @@ public class ClassroomDAO {
   public Classroom saveClassroom(Classroom classroom) throws SQLException {
     String sql = "INSERT INTO classes (course_id, title, description, content_url, sequence) VALUES (?, ?, ?, ?, ?)";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
       if (classroom.getCourseId() <= 0) {
@@ -59,7 +66,7 @@ public class ClassroomDAO {
     String sql = "SELECT * FROM classes WHERE classroom_id = ?";
     Classroom classroom = null;
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setInt(1, idClassroom);
@@ -83,7 +90,7 @@ public class ClassroomDAO {
     List<Classroom> classrooms = new ArrayList<>();
     String sql = "SELECT * FROM classes WHERE course_id = ? ORDER BY sequence ASC, classroom_id ASC";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setInt(1, idCourse);
@@ -107,7 +114,7 @@ public class ClassroomDAO {
     String sql = "UPDATE classes SET course_id = ?, title = ?, description = ?, content_url = ?, sequence = ? " +
         "WHERE classroom_id = ?";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       if (classroom.getCourseId() <= 0) {
@@ -133,7 +140,7 @@ public class ClassroomDAO {
    */
   public boolean deleteClass(int idClassroom) throws SQLException {
     String sql = "DELETE FROM classes WHERE classroom_id = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idClassroom);
       return pstmt.executeUpdate() > 0;
@@ -151,7 +158,7 @@ public class ClassroomDAO {
    */
   public int deleteClassesByCourse(int idCourse) throws SQLException {
     String sql = "DELETE FROM classes WHERE classroom_id = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idCourse);
       return pstmt.executeUpdate();

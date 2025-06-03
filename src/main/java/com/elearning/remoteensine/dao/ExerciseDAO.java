@@ -3,12 +3,18 @@ package com.elearning.remoteensine.dao;
 import com.elearning.remoteensine.model.Exercise;
 import com.elearning.remoteensine.model.enums.ExerciseType;
 import com.elearning.remoteensine.util.DatabaseConnector;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExerciseDAO {
+@Repository
+public class ExerciseDAO extends AbstractDAO {
+
+  public ExerciseDAO(DatabaseConnector databaseConnector) {
+    super(databaseConnector);
+  }
 
   /**
    * Salva um novo exercício no banco de dados.
@@ -20,7 +26,7 @@ public class ExerciseDAO {
   public Exercise saveExercise(Exercise exercise) throws SQLException {
     String sql = "INSERT INTO exercises (classroom_id, statement, exercise_type, correct_answer) " +
         "VALUES (?, ?, ?, ?)";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
       if (exercise.getClassroomId() <= 0) {
@@ -60,7 +66,7 @@ public class ExerciseDAO {
     String sql = "SELECT * FROM exercises WHERE exercise_id = ?";
     Exercise exercise = null;
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setInt(1, idExercise);
@@ -84,7 +90,7 @@ public class ExerciseDAO {
     List<Exercise> exercises = new ArrayList<>();
     String sql = "SELECT * FROM exercises WHERE classroom_id = ? ORDER BY exercise_id ASC"; // Ou alguma coluna de ordem se existir
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setInt(1, idClassroom);
@@ -108,7 +114,7 @@ public class ExerciseDAO {
     String sql = "UPDATE exercises SET classroom_id = ?, statement = ?, exercise_type = ?, correct_answer = ? " +
         "WHERE exercise_id = ?";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       if (exercise.getClassroomId() <= 0) {
@@ -133,7 +139,7 @@ public class ExerciseDAO {
    */
   public boolean deleteExercise(int idExercise) throws SQLException {
     String sql = "DELETE FROM exercises WHERE exercise_id = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idExercise);
       return pstmt.executeUpdate() > 0;
@@ -149,7 +155,7 @@ public class ExerciseDAO {
    */
   public int deleteExerciseByClass(int idClassroom) throws SQLException {
     String sql = "DELETE FROM exercises WHERE classroom_id = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idClassroom);
       return pstmt.executeUpdate();

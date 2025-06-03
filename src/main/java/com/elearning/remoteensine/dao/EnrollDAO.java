@@ -5,13 +5,20 @@ import com.elearning.remoteensine.model.Enroll;
 import com.elearning.remoteensine.model.Professor;
 import com.elearning.remoteensine.model.Student;
 import com.elearning.remoteensine.util.DatabaseConnector;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EnrollDAO {
+@Repository
+public class EnrollDAO extends AbstractDAO{
+
+  public EnrollDAO(DatabaseConnector databaseConnector) {
+    super(databaseConnector);
+  }
+
   /**
    * Matricula um aluno em um curso.
    *
@@ -27,7 +34,7 @@ public class EnrollDAO {
       return false;
     }
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setInt(1, idStudent);
@@ -49,7 +56,7 @@ public class EnrollDAO {
    */
   public boolean checkEnroll(int idStudent, int idCourse) throws SQLException {
     String sql = "SELECT COUNT(*) FROM students_courses WHERE student_id = ? AND course_id = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idStudent);
       pstmt.setInt(2, idCourse);
@@ -81,7 +88,7 @@ public class EnrollDAO {
         "JOIN courses c ON sc.course_id = c.course_id " +
         "WHERE sc.student_id = ?";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idStudent);
       try (ResultSet rs = pstmt.executeQuery()) {
@@ -132,7 +139,7 @@ public class EnrollDAO {
         "JOIN users u ON sc.student_id = u.user_id " +
         "WHERE sc.course_id = ? AND u.user_type = 'STUDENT'";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idCourse);
       try (ResultSet rs = pstmt.executeQuery()) {
@@ -174,7 +181,7 @@ public class EnrollDAO {
       System.err.println("Attempt to update progress to invalid value: " + progress);
     }
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setDouble(1, progress);
       pstmt.setInt(2, idStudent);
@@ -193,7 +200,7 @@ public class EnrollDAO {
    */
   public boolean cancelEnroll(int idStudent, int idCourse) throws SQLException {
     String sql = "DELETE FROM students_courses WHERE student_id = ? AND course_id = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idStudent);
       pstmt.setInt(2, idCourse);

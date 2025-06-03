@@ -32,13 +32,13 @@ public class StudentsExerciseAnswerService {
   private final EnrollDAO enrollDAO;
 
 
-  public StudentsExerciseAnswerService() {
-    this.answerDAO = new StudentsExerciseAnswerDAO();
-    this.exerciseDAO = new ExerciseDAO(); // Ou ExercicioDAO()
-    this.userDAO = new UserDAO();
-    this.classroomDAO = new ClassroomDAO(); // Ou AulaDAO()
-    this.courseDAO = new CourseDAO();
-    this.enrollDAO = new EnrollDAO(); // Ou MatriculaDAO()
+  public StudentsExerciseAnswerService(StudentsExerciseAnswerDAO answerDAO, ExerciseDAO exerciseDAO, UserDAO userDAO, ClassroomDAO classroomDAO, CourseDAO courseDAO, EnrollDAO enrollDAO) {
+    this.answerDAO = answerDAO;
+    this.exerciseDAO = exerciseDAO;
+    this.userDAO = userDAO;
+    this.classroomDAO = classroomDAO;
+    this.courseDAO = courseDAO;
+    this.enrollDAO = enrollDAO;
   }
 
   /**

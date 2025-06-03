@@ -5,11 +5,18 @@ import com.elearning.remoteensine.model.Student;
 import com.elearning.remoteensine.model.User;
 import com.elearning.remoteensine.model.enums.UserType;
 import com.elearning.remoteensine.util.DatabaseConnector;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 
-public class UserDAO {
+@Repository
+public class UserDAO extends AbstractDAO {
+
+  public UserDAO(DatabaseConnector databaseConnector) {
+    super(databaseConnector);
+  }
+
   /**
    * Salva um novo usuário (Student ou Professor) no banco de dados.
    * A senha do usuário já deve vir hasheada para este método.
@@ -21,7 +28,7 @@ public class UserDAO {
   public User saveUser(User user) throws SQLException {
     String sql = "INSERT INTO users (name, email, password, user_type, specialization, register_hour) VALUES (?, ?, ?, ?, ?, ?)";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
       pstmt.setString(1, user.getName());
@@ -70,7 +77,7 @@ public class UserDAO {
     String sql = "SELECT * FROM users WHERE email = ?";
     User user = null;
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setString(1, email);
@@ -94,7 +101,7 @@ public class UserDAO {
     String sql = "SELECT * FROM users WHERE user_id = ?";
     User user = null;
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setInt(1, idUser);
@@ -149,7 +156,7 @@ public class UserDAO {
    */
   public boolean attUser(User user) throws SQLException {
     String sql = "UPDATE users SET name = ?, email = ?, password = ?, user_type = ?, specialization = ?, register_hour = ? WHERE user_id = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setString(1, user.getName());
@@ -178,7 +185,7 @@ public class UserDAO {
    */
   public boolean deleteUser(int idUser) throws SQLException {
     String sql = "DELETE FROM users WHERE user_id = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idUser);
       return pstmt.executeUpdate() > 0;

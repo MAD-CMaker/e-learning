@@ -21,10 +21,10 @@ public class ExamDefinitionService {
   private CourseDAO courseDAO;
   private UserDAO userDAO;
 
-  public ExamDefinitionService() {
-    this.examDefinitionDAO = new ExamDefinitionDAO();
-    this.courseDAO = new CourseDAO();
-    this.userDAO = new UserDAO();
+  public ExamDefinitionService(ExamDefinitionDAO examDefinitionDAO, CourseDAO courseDAO, UserDAO userDAO) {
+    this.examDefinitionDAO = examDefinitionDAO;
+    this.courseDAO = courseDAO;
+    this.userDAO = userDAO;
   }
 
   public ExamDefinition createExamDefinition(int idCourse, int idProfessorLogado, String title, String description)

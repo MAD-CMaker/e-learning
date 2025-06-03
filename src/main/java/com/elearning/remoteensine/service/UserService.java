@@ -16,9 +16,10 @@ import java.time.LocalDateTime;
 public class UserService {
   private UserDAO userDAO;
 
-  public UserService() {
-    this.userDAO = new UserDAO();
+  public UserService(UserDAO userDAO) {
+    this.userDAO = userDAO;
   }
+
   /**
    * Cria um novo usuário (Student ou Professor), hasheando a senha antes de salvar.
    *

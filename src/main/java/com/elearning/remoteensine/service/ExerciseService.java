@@ -23,11 +23,11 @@ public class ExerciseService {
   private UserDAO userDAO;
 
 
-  public ExerciseService() {
-    this.exerciseDAO = new ExerciseDAO();
-    this.classroomDAO = new ClassroomDAO();
-    this.courseDAO = new CourseDAO();
-    this.userDAO = new UserDAO();
+  public ExerciseService(ExerciseDAO exerciseDAO, ClassroomDAO classroomDAO, CourseDAO courseDAO, UserDAO userDAO) {
+    this.exerciseDAO = exerciseDAO;
+    this.classroomDAO = classroomDAO;
+    this.courseDAO = courseDAO;
+    this.userDAO = userDAO;
   }
 
   /**

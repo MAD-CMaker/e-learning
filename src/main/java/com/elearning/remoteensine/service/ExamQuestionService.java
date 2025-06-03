@@ -27,11 +27,11 @@ public class ExamQuestionService {
   private final CourseDAO courseDAO;
   private final UserDAO userDAO;
 
-  public ExamQuestionService() {
-    this.examQuestionDAO = new ExamQuestionDAO();
-    this.examDefinitionDAO = new ExamDefinitionDAO();
-    this.courseDAO = new CourseDAO();
-    this.userDAO = new UserDAO();
+  public ExamQuestionService(ExamQuestionDAO examQuestionDAO, ExamDefinitionDAO examDefinitionDAO, CourseDAO courseDAO, UserDAO userDAO) {
+    this.examQuestionDAO = examQuestionDAO;
+    this.examDefinitionDAO = examDefinitionDAO;
+    this.courseDAO = courseDAO;
+    this.userDAO = userDAO;
   }
 
   /**

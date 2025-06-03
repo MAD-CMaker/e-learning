@@ -18,10 +18,10 @@ public class ClassroomService {
   private CourseDAO courseDAO;
   private UserDAO userDAO;
 
-  public ClassroomService() {
-    this.classroomDAO = new ClassroomDAO();
-    this.courseDAO = new CourseDAO();
-    this.userDAO = new UserDAO();
+  public ClassroomService(ClassroomDAO classroomDAO, CourseDAO courseDAO, UserDAO userDAO) {
+    this.classroomDAO = classroomDAO;
+    this.courseDAO = courseDAO;
+    this.userDAO = userDAO;
   }
 
   /**

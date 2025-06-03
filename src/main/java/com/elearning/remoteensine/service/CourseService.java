@@ -17,9 +17,9 @@ public class CourseService {
   private CourseDAO courseDAO;
   private UserDAO userDAO;
 
-  public CourseService() {
-    this.courseDAO = new CourseDAO();
-    this.userDAO = new UserDAO();
+  public CourseService(CourseDAO courseDAO, UserDAO userDAO) {
+    this.courseDAO = courseDAO;
+    this.userDAO = userDAO;
   }
 
   /**

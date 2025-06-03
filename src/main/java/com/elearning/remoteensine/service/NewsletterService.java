@@ -16,8 +16,8 @@ public class NewsletterService {
       "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$");
 
 
-  public NewsletterService() {
-    this.newsletterDAO = new NewsletterDAO();
+  public NewsletterService(NewsletterDAO newsletterDAO) {
+    this.newsletterDAO = newsletterDAO;
   }
 
   /**

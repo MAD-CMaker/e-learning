@@ -2,13 +2,20 @@ package com.elearning.remoteensine.dao;
 
 import com.elearning.remoteensine.model.VisitorQuestion;
 import com.elearning.remoteensine.util.DatabaseConnector;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VisitorQuestionDAO {
+@Repository
+public class VisitorQuestionDAO extends AbstractDAO {
+
+  public VisitorQuestionDAO(DatabaseConnector databaseConnector) {
+    super(databaseConnector);
+  }
+
   /**
    * Salva uma nova pergunta de visitante no banco de dados.
    *
@@ -20,7 +27,7 @@ public class VisitorQuestionDAO {
     String sql = "INSERT INTO visitors_questions (visitor_name, visitor_email, question_text, question_hour_date) " +
         "VALUES (?, ?, ?, ?)";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
       pstmt.setString(1, question.getVisitorName());
@@ -56,7 +63,7 @@ public class VisitorQuestionDAO {
     String sql = "SELECT * FROM visitors_questions WHERE question_id = ?";
     VisitorQuestion question = null;
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setInt(1, idQuestion);
@@ -84,7 +91,7 @@ public class VisitorQuestionDAO {
     }
     sql += " ORDER BY question_hour_date DESC";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql);
          ResultSet rs = pstmt.executeQuery()) {
 
@@ -106,7 +113,7 @@ public class VisitorQuestionDAO {
     String sql = "UPDATE visitors_questions SET answer = ?, answer_hour_date = ?, professor_responsible_id = ? " +
         "WHERE question_id = ?";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setString(1, question.getAnswer());
@@ -135,7 +142,7 @@ public class VisitorQuestionDAO {
    */
   public boolean deleteQuestion(int idQuestion) throws SQLException {
     String sql = "DELETE FROM visitors_questions WHERE question_id = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idQuestion);
       return pstmt.executeUpdate() > 0;

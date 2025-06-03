@@ -25,12 +25,12 @@ public class ExamService {
   private EnrollDAO enrollDAO;
   private ExamDefinitionDAO examDefinitionDAO;
 
-  public ExamService() {
-    this.examDAO = new ExamDAO();
-    this.userDAO = new UserDAO();
-    this.courseDAO = new CourseDAO();
-    this.enrollDAO = new EnrollDAO();
-    this.examDefinitionDAO = new ExamDefinitionDAO();
+  public ExamService(ExamDAO examDAO, UserDAO userDAO, CourseDAO courseDAO, EnrollDAO enrollDAO, ExamDefinitionDAO examDefinitionDAO) {
+    this.examDAO = examDAO;
+    this.userDAO = userDAO;
+    this.courseDAO = courseDAO;
+    this.enrollDAO = enrollDAO;
+    this.examDefinitionDAO = examDefinitionDAO;
   }
 
   public Exam submitCourseEvaluation(int idCourse, int idStudent, int grade, String comment)

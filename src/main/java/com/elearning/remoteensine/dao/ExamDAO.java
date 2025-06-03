@@ -2,13 +2,19 @@ package com.elearning.remoteensine.dao;
 
 import com.elearning.remoteensine.model.Exam;
 import com.elearning.remoteensine.util.DatabaseConnector;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class  ExamDAO {
+@Repository
+public class  ExamDAO extends AbstractDAO {
+
+  public ExamDAO(DatabaseConnector databaseConnector) {
+    super(databaseConnector);
+  }
 
   /**
    * Salva uma nova avaliação no banco de dados.
@@ -21,7 +27,7 @@ public class  ExamDAO {
   public Exam saveExam(Exam exam) throws SQLException {
     String sql = "INSERT INTO exams_courses (course_id, id_exam_definition, student_id, grade, comment, hour_date,submited) " +
         "VALUES (?, ?, ?, ?, ?, ?, ?)";
-    try (Connection conn = DatabaseConnector.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+    try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
       pstmt.setInt(1, exam.getCourseId());
       pstmt.setInt(2, exam.getIdExamDefinition());
       pstmt.setInt(3, exam.getStudentId());
@@ -55,7 +61,7 @@ public class  ExamDAO {
     String sql = "SELECT * FROM exams_curses WHERE exam_id = ?";
     Exam exam = null;
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setInt(1, idExam);
@@ -80,7 +86,7 @@ public class  ExamDAO {
   public Exam searchExamByStundentACourse(int idStudent, int idCourse) throws SQLException {
     String sql = "SELECT * FROM avaliacoes_curso WHERE id_student = ? AND id_curso = ?";
     Exam exam = null;
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idStudent);
       pstmt.setInt(2, idCourse);
@@ -104,7 +110,7 @@ public class  ExamDAO {
     List<Exam> exams = new ArrayList<>();
     String sql = "SELECT * FROM exams_courses WHERE course_id = ? ORDER BY hour_date DESC";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setInt(1, idCourse);
@@ -128,7 +134,7 @@ public class  ExamDAO {
     String sql = "SELECT AVG(grade) FROM exams_courses WHERE course_id = ?";
     double media = 0.0;
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idCourse);
       try (ResultSet rs = pstmt.executeQuery()) {
@@ -151,7 +157,7 @@ public class  ExamDAO {
   public boolean updateExam(Exam exam) throws SQLException {
     String sql = "UPDATE exams_courses SET nota = ?, comment = ?, hour_date = ? WHERE exam_id = ?";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setInt(1, exam.getGrade());
@@ -172,7 +178,7 @@ public class  ExamDAO {
    */
   public boolean deleteExam(int idExam) throws SQLException {
     String sql = "DELETE FROM exams_courses WHERE exam_id = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idExam);
       return pstmt.executeUpdate() > 0;

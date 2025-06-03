@@ -19,10 +19,10 @@ public class EnrollService {
   private UserDAO userDAO;
   private CourseDAO courseDAO;
 
-  public EnrollService() {
-    this.enrollDAO = new EnrollDAO();
-    this.userDAO = new UserDAO();
-    this.courseDAO = new CourseDAO();
+  public EnrollService(EnrollDAO enrollDAO, UserDAO userDAO, CourseDAO courseDAO) {
+    this.enrollDAO = enrollDAO;
+    this.userDAO = userDAO;
+    this.courseDAO = courseDAO;
   }
 
   /**

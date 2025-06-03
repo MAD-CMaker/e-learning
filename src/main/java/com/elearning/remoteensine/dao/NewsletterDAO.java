@@ -2,13 +2,19 @@ package com.elearning.remoteensine.dao;
 
 import com.elearning.remoteensine.model.NewsLetterInscription;
 import com.elearning.remoteensine.util.DatabaseConnector;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NewsletterDAO {
+@Repository
+public class NewsletterDAO extends AbstractDAO {
+
+  public NewsletterDAO(DatabaseConnector databaseConnector) {
+    super(databaseConnector);
+  }
 
   /**
    * Salva uma nova inscrição de e-mail na newsletter.
@@ -20,7 +26,7 @@ public class NewsletterDAO {
   public NewsLetterInscription saveInscription(NewsLetterInscription inscription) throws SQLException {
     String sql = "INSERT INTO newsletter_inscription(email, inscription_hour, active) VALUES (?, ?, ?)";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
       pstmt.setString(1, inscription.getEmail());
@@ -55,7 +61,7 @@ public class NewsletterDAO {
     String sql = "SELECT * FROM newsletter_inscription WHERE email = ?";
     NewsLetterInscription inscription = null;
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setString(1, email);
@@ -77,7 +83,7 @@ public class NewsletterDAO {
    */
   public boolean updateInscriptionStatus(NewsLetterInscription inscription) throws SQLException {
     String sql = "UPDATE newsletter_inscription SET active = ? WHERE inscription_id = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setBoolean(1, inscription.isActive());
       pstmt.setInt(2, inscription.getInscriptionId());
@@ -100,7 +106,7 @@ public class NewsletterDAO {
     }
     sql += " ORDER BY inscription_hour DESC";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql);
          ResultSet rs = pstmt.executeQuery()) {
 

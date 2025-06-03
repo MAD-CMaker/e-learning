@@ -21,11 +21,11 @@ public class DoubtService {
     private UserDAO userDAO;
     private CourseDAO courseDAO;
 
-    public DoubtService() {
-      this.doubtDAO = new DoubtDAO();
-      this.userDAO = new UserDAO();
-      this.courseDAO = new CourseDAO();
-    }
+  public DoubtService(DoubtDAO doubtDAO, UserDAO userDAO, CourseDAO courseDAO) {
+    this.doubtDAO = doubtDAO;
+    this.userDAO = userDAO;
+    this.courseDAO = courseDAO;
+  }
 
   /**
    * Cria uma nova dúvida para um curso.

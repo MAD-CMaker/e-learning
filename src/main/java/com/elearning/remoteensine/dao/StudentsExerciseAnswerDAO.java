@@ -2,13 +2,19 @@ package com.elearning.remoteensine.dao;
 
 import com.elearning.remoteensine.model.StudentsExerciseAnswer;
 import com.elearning.remoteensine.util.DatabaseConnector;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StudentsExerciseAnswerDAO {
+@Repository
+public class StudentsExerciseAnswerDAO extends AbstractDAO {
+
+  public StudentsExerciseAnswerDAO(DatabaseConnector databaseConnector) {
+    super(databaseConnector);
+  }
 
   /**
    * Salva a resposta de um aluno a um exercício.
@@ -21,7 +27,7 @@ public class StudentsExerciseAnswerDAO {
         "(id_exercise, id_student, id_class, id_course, answer_text, send_date, is_correct, grade, feedback_professor) " +
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
       pstmt.setInt(1, answer.getIdExercise());
@@ -67,7 +73,7 @@ public class StudentsExerciseAnswerDAO {
   public StudentsExerciseAnswer getAnswerByStudentAndExercise(int studentId, int exerciseId) throws SQLException {
     String sql = "SELECT * FROM student_exercise_answers WHERE id_student = ? AND id_exercise = ?";
     StudentsExerciseAnswer answer = null;
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, studentId);
       pstmt.setInt(2, exerciseId);
@@ -86,7 +92,7 @@ public class StudentsExerciseAnswerDAO {
   public List<StudentsExerciseAnswer> getAnswersByStudentAndClassroom(int studentId, int classroomId) throws SQLException {
     List<StudentsExerciseAnswer> answers = new ArrayList<>();
     String sql = "SELECT * FROM student_exercise_answers WHERE id_student = ? AND id_class = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, studentId);
       pstmt.setInt(2, classroomId);
@@ -107,7 +113,7 @@ public class StudentsExerciseAnswerDAO {
     String sql = "UPDATE student_exercise_answers SET " +
         "answer_text = ?, send_date = ?, is_correct = ?, grade = ?, feedback_professor = ? " +
         "WHERE id_student_answer_exercise = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setString(1, answer.getAnswerText());

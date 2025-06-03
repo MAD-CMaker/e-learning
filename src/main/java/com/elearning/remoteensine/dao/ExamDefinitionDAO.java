@@ -2,19 +2,25 @@ package com.elearning.remoteensine.dao;
 
 import com.elearning.remoteensine.model.ExamDefinition;
 import com.elearning.remoteensine.util.DatabaseConnector;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExamDefinitionDAO {
+@Repository
+public class ExamDefinitionDAO extends AbstractDAO {
+
+  public ExamDefinitionDAO(DatabaseConnector databaseConnector) {
+    super(databaseConnector);
+  }
 
   public ExamDefinition saveExamDefinition(ExamDefinition examDef) throws SQLException {
     String sql = "INSERT INTO exam_definitions (id_course, title, description, creation_date, update_date) " +
         "VALUES (?, ?, ?, ?, ?)";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
       pstmt.setInt(1, examDef.getIdCourse());
@@ -43,7 +49,7 @@ public class ExamDefinitionDAO {
   public ExamDefinition findExamDefinitionById(int idExamDefinition) throws SQLException {
     String sql = "SELECT * FROM exam_definitions WHERE id_exam_definition = ?";
     ExamDefinition examDef = null;
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idExamDefinition);
       try (ResultSet rs = pstmt.executeQuery()) {
@@ -67,7 +73,7 @@ public class ExamDefinitionDAO {
     }
     sql += " ORDER BY creation_date DESC";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idCourse);
       try (ResultSet rs = pstmt.executeQuery()) {
@@ -94,7 +100,7 @@ public class ExamDefinitionDAO {
             "WHERE exd.id_course = ? AND exd.published = TRUE AND exc.exam_id IS NULL " +
             "ORDER BY exd.creation_date DESC";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idCourse);
       try (ResultSet rs = pstmt.executeQuery()) {
@@ -116,7 +122,7 @@ public class ExamDefinitionDAO {
 
   public boolean updateExamDefinition(ExamDefinition examDef) throws SQLException {
     String sql = "UPDATE exam_definitions SET title = ?, description = ?, published = ? WHERE id_exam_definition = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setString(1, examDef.getTitle());
       pstmt.setString(2, examDef.getDescription());
@@ -132,7 +138,7 @@ public class ExamDefinitionDAO {
 
   public boolean deleteExamDefinition(int idExamDefinition) throws SQLException {
     String sql = "DELETE FROM exam_definitions WHERE id_exam_definition = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idExamDefinition);
       return pstmt.executeUpdate() > 0;

@@ -3,13 +3,20 @@ package com.elearning.remoteensine.dao;
 import com.elearning.remoteensine.model.Doubt;
 import com.elearning.remoteensine.model.enums.DoubtStatus;
 import com.elearning.remoteensine.util.DatabaseConnector;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DoubtDAO {
+@Repository
+public class DoubtDAO extends AbstractDAO {
+
+  public DoubtDAO(DatabaseConnector databaseConnector) {
+    super(databaseConnector);
+  }
+
   /**
    * Salva uma nova dúvida no banco de dados.
    *
@@ -21,7 +28,7 @@ public class DoubtDAO {
     String sql = "INSERT INTO courses_doubts (course_id, student_id, title, description, creation_hour_date, status) " +
         "VALUES (?, ?, ?, ?, ?, ?)";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
       pstmt.setInt(1, doubt.getCourseId());
@@ -60,7 +67,7 @@ public class DoubtDAO {
     String sql = "SELECT * FROM courses_doubts WHERE doubt_id = ?";
     Doubt doubt = null;
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setInt(1, idDoubt);
@@ -84,7 +91,7 @@ public class DoubtDAO {
     List<Doubt> doubts = new ArrayList<>();
     String sql = "SELECT * FROM courses_doubts WHERE course_id = ? ORDER BY creation_hour_date DESC";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setInt(1, idCourse);
@@ -108,7 +115,7 @@ public class DoubtDAO {
     List<Doubt> doubts = new ArrayList<>();
     String sql = "SELECT * FROM courses_doubts WHERE student_id = ? ORDER BY creation_hour_date DESC";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setInt(1, idStudent);
@@ -133,7 +140,7 @@ public class DoubtDAO {
     String sql = "UPDATE courses_doubts SET answer = ?, creation_hour_date = ?, answer_professor_id = ?, status = ? " +
         "WHERE doubt_id = ?";
 
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setString(1, doubt.getAnswer());
@@ -163,7 +170,7 @@ public class DoubtDAO {
    */
   public boolean deleteDoubt(int idDoubt) throws SQLException {
     String sql = "DELETE FROM courses_doubts WHERE doubt_id = ?";
-    try (Connection conn = DatabaseConnector.getConnection();
+    try (Connection conn = getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, idDoubt);
       return pstmt.executeUpdate() > 0;
