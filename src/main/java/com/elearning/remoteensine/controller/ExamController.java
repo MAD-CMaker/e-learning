@@ -27,7 +27,6 @@ public class ExamController {
   private final ExamDefinitionService examDefinitionService;
   private final ExamQuestionService examQuestionService;
 
-  @Autowired
   public ExamController(ExamService examService, CourseService courseService,
                         EnrollService enrollService, ExamQuestionService examQuestionService,
                         ExamDefinitionService examDefinitionService) {

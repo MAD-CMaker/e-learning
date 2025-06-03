@@ -20,7 +20,6 @@ public class NewsletterController {
 
   private final NewsletterService newsletterService;
 
-  @Autowired
   public NewsletterController(NewsletterService newsletterService) {
     this.newsletterService = newsletterService;
   }

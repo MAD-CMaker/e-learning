@@ -27,7 +27,6 @@ public class TestController {
     private final EnrollService enrollService;
     private final ExamService examService;
 
-    @Autowired
     public TestController(ExamDefinitionService examDefinitionService,
                           ExamQuestionService examQuestionService,
                           CourseService courseService,

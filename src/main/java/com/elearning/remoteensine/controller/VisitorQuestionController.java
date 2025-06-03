@@ -22,7 +22,6 @@ public class VisitorQuestionController {
   private final VisitorQuestionService visitorQuestionService;
   private final UserService userService;
 
-  @Autowired
   public VisitorQuestionController(VisitorQuestionService visitorQuestionService, UserService userService) {
     this.visitorQuestionService = visitorQuestionService;
     this.userService = userService;

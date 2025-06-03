@@ -10,7 +10,6 @@ public abstract class AbstractDAO {
 
     protected final DatabaseConnector databaseConnector;
 
-    @Autowired
     public AbstractDAO(DatabaseConnector databaseConnector) {
         this.databaseConnector = databaseConnector;
     }
