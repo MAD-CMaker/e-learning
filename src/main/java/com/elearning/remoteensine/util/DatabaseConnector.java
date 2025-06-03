@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public class DatabaseConnector {
 
 //  @Value("${spring.datasource.url}")
-  private String URL = "jdbc:mysql://root:GYGshnhdYoehknkecZbOAGttyxPYsXMi@mysql-elearning.railway.internal:3306/railway";
+  private String URL = "mysql://root:GYGshnhdYoehknkecZbOAGttyxPYsXMi@mysql-elearning.railway.internal:3306/railway";
 
 ////  @Value("${spring.datasource.username}")
 //  private String USER = root; //
