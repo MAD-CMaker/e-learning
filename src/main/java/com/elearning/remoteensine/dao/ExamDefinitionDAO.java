@@ -1,6 +1,7 @@
 package com.elearning.remoteensine.dao;
 
 import com.elearning.remoteensine.model.ExamDefinition;
+import com.elearning.remoteensine.model.GradeStudent;
 import com.elearning.remoteensine.util.DatabaseConnector;
 import org.springframework.stereotype.Repository;
 
@@ -120,6 +121,37 @@ public class ExamDefinitionDAO extends AbstractDAO {
     return examDefs;
   }
 
+  public List<GradeStudent> findGradeExamDefitionByCourse(int idCourse, int studentId) throws SQLException {
+    List<GradeStudent> grades = new ArrayList<>();
+    String sql = "SELECT ed.id_exam_definition, ed.title, ed.description, ed.creation_date, ed.published, ec.exam_id, ec.grade AS student_grade, SUM(eq.grade) AS total_exam_value " +
+            "FROM exam_definitions ed " +
+            "JOIN exams_courses ec ON ec.id_exam_definition = ed.id_exam_definition " +
+            "JOIN exam_questions eq ON eq.id_exam_definition = ed.id_exam_definition " +
+            "WHERE ed.id_course = ? AND ec.student_id = ? AND ec.submited = TRUE " +
+            "GROUP BY ed.id_exam_definition, ed.title, ed.description, ed.creation_date, ed.published, ec.exam_id, ec.grade " +
+            "ORDER BY ed.creation_date DESC";
+
+    try (Connection conn = getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      pstmt.setInt(1, idCourse);
+      pstmt.setInt(2, studentId);
+      try (ResultSet rs = pstmt.executeQuery()) {
+        int rowCount = 0;
+        while (rs.next()) {
+          rowCount++;
+          GradeStudent gradeStudent = mapResultSetToGradeStudent(rs);
+          if (gradeStudent != null) {
+            grades.add(gradeStudent);
+          }
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+      throw e;
+    }
+    return grades;
+  }
+
   public boolean updateExamDefinition(ExamDefinition examDef) throws SQLException {
     String sql = "UPDATE exam_definitions SET title = ?, description = ?, published = ? WHERE id_exam_definition = ?";
     try (Connection conn = getConnection();
@@ -170,5 +202,23 @@ public class ExamDefinitionDAO extends AbstractDAO {
       throw e;
     }
     return examDef;
+  }
+
+  private GradeStudent mapResultSetToGradeStudent(ResultSet rs) throws SQLException {
+    GradeStudent gradeStudent = new GradeStudent();
+    try {
+      gradeStudent.setIdDefinitionExam(rs.getInt("id_exam_definition"));
+      gradeStudent.setTitle(rs.getString("title"));
+      gradeStudent.setDescription(rs.getString("description"));
+      gradeStudent.setCreationDate(rs.getTimestamp("creation_date").toLocalDateTime());
+      gradeStudent.setPublished(rs.getBoolean("published"));
+      gradeStudent.setExamId(rs.getInt("exam_id"));
+      gradeStudent.setGrade(rs.getInt("student_grade"));
+      gradeStudent.setTotalValueExam(rs.getInt("total_exam_value"));
+      return gradeStudent;
+
+    } catch (SQLException e){
+      throw e;
+    }
   }
 }

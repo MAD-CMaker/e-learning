@@ -184,7 +184,6 @@
                 </div>
             </div>
 
-
             <div class="aulas-section" style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
                 <h2>Aulas do Curso</h2>
 
@@ -278,6 +277,9 @@
                            ...>Realizar Prova</a>
                     </li>
                 </ul>
+            </div>
+            <div th:if="${isAlunoMatriculado}" class="boletim-section">
+                <h2>Boletim</h2>
             </div>
             <div th:if="${isAlunoMatriculado and (#lists.isEmpty(provasDisponiveisParaAluno))}"
                  class="provas-aluno-section" ...>

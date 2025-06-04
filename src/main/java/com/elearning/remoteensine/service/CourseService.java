@@ -1,13 +1,16 @@
 package com.elearning.remoteensine.service;
 
+import com.elearning.remoteensine.dao.DoubtDAO;
 import com.elearning.remoteensine.dao.UserDAO;
 import com.elearning.remoteensine.dao.CourseDAO;
 import com.elearning.remoteensine.model.Professor;
 import com.elearning.remoteensine.model.Course;
 import com.elearning.remoteensine.model.User;
 import com.elearning.remoteensine.model.enums.UserType;
+import com.elearning.remoteensine.util.DatabaseConnector;
 import org.springframework.stereotype.Service;
 
+import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;

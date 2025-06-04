@@ -5,6 +5,7 @@ import com.elearning.remoteensine.dao.ExamDefinitionDAO;
 import com.elearning.remoteensine.dao.UserDAO;
 import com.elearning.remoteensine.model.Course;
 import com.elearning.remoteensine.model.ExamDefinition; // Sua classe
+import com.elearning.remoteensine.model.GradeStudent;
 import com.elearning.remoteensine.model.User;
 import com.elearning.remoteensine.model.enums.UserType; // Seu enum
 import org.springframework.stereotype.Service;
@@ -113,6 +114,10 @@ public class ExamDefinitionService {
     System.out.println("SERVICE (Aluno): DAO retornou " + (publishedsNotAnswered != null ? publishedsNotAnswered.size() : "null") + " provas (supostamente publicadas).");
 
     return publishedsNotAnswered;
+  }
+
+  public List<GradeStudent> listarNotasDoAlunoPorProvaECursoId(int idCurso, int studentId) throws SQLException {
+    return examDefinitionDAO.findGradeExamDefitionByCourse(idCurso, studentId);
   }
 
   public List<ExamDefinition> getExamDefinitionsForCourseManagement(int idCurso, int idProfessorLogado)

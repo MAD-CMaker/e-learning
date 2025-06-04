@@ -174,6 +174,7 @@ public class CourseController {
     List<Classroom> aulasDoCurso = new ArrayList<>();
     List<ExamDefinition> definicoesProvaParaGerenciamento = new ArrayList<>();
     List<ExamDefinition> provasDisponiveisParaAluno = new ArrayList<>();
+    List<GradeStudent> notasProvaPorCurso = new ArrayList<>();
 
     boolean isAluno = false;
     boolean isProfessor = false;
@@ -192,31 +193,33 @@ public class CourseController {
         duvidas = doubtService.listCourseDoubts(idCurso);
         aulasDoCurso = classroomService.listCoursesClasses(idCurso);
       }
-        if (usuarioLogado != null) {
-          if (usuarioLogado.getUserType() == UserType.PROFESSOR) {
-            model.addAttribute("isProfessor", true);
-            if (curso.getResponsibleProfessor() != null && curso.getResponsibleProfessor().getIdUser() == usuarioLogado.getIdUser()) {
-              isProfessorDono = true;
-              definicoesProvaParaGerenciamento = examDefinitionService.getExamDefinitionsForCourseManagement(idCurso, usuarioLogado.getIdUser());
-              model.addAttribute("definicoesProvaParaProfessor", definicoesProvaParaGerenciamento); // Use a chave correta que a view espera
-            }
-          } else if (usuarioLogado.getUserType() == UserType.STUDENT) {
-            isAluno = true;
-            isAlunoMatriculado = enrollService.checkEnrolledStudents(usuarioLogado.getIdUser(), idCurso);
-            podeInteragir = isAlunoMatriculado;
-            podeComentar = isAlunoMatriculado;
-            if (isAlunoMatriculado) {
-              provasDisponiveisParaAluno = examDefinitionService.listarProvasPorCursoPublicadasNaoSubmetidas(idCurso);
-              model.addAttribute("provasDisponiveisParaAluno", provasDisponiveisParaAluno);
-            }
+      if (usuarioLogado != null) {
+        if (usuarioLogado.getUserType() == UserType.PROFESSOR) {
+          model.addAttribute("isProfessor", true);
+          if (curso.getResponsibleProfessor() != null && curso.getResponsibleProfessor().getIdUser() == usuarioLogado.getIdUser()) {
+            isProfessorDono = true;
+            definicoesProvaParaGerenciamento = examDefinitionService.getExamDefinitionsForCourseManagement(idCurso, usuarioLogado.getIdUser());
+            model.addAttribute("definicoesProvaParaProfessor", definicoesProvaParaGerenciamento); // Use a chave correta que a view espera
+          }
+        } else if (usuarioLogado.getUserType() == UserType.STUDENT) {
+          isAluno = true;
+          isAlunoMatriculado = enrollService.checkEnrolledStudents(usuarioLogado.getIdUser(), idCurso);
+          podeInteragir = isAlunoMatriculado;
+          podeComentar = isAlunoMatriculado;
+          if (isAlunoMatriculado) {
+            provasDisponiveisParaAluno = examDefinitionService.listarProvasPorCursoPublicadasNaoSubmetidas(idCurso);
+            notasProvaPorCurso = examDefinitionService.listarNotasDoAlunoPorProvaECursoId(idCurso, usuarioLogado.getIdUser());
+            model.addAttribute("provasDisponiveisParaAluno", provasDisponiveisParaAluno);
+            model.addAttribute("notasProvaPorCurso", notasProvaPorCurso);
           }
         }
-      } catch(Exception e){
-
-        e.printStackTrace();
-        model.addAttribute("erro_geral", "Erro ao carregar detalhes do curso: " + e.getMessage());
-        if (curso == null) model.addAttribute("curso", new Course());
       }
+    } catch (Exception e) {
+
+      e.printStackTrace();
+      model.addAttribute("erro_geral", "Erro ao carregar detalhes do curso: " + e.getMessage());
+      if (curso == null) model.addAttribute("curso", new Course());
+    }
 
 
     model.addAttribute("comentarios", comentarios);
