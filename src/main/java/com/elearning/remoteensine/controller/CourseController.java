@@ -378,7 +378,6 @@ public class CourseController {
       }
       model.addAttribute("respostasDoAluno", respostasDoAluno);
 
-      // ... (lógica de navegação próxima/anterior aula, se mantida) ...
       List<Classroom> todasAulasDoCurso = classroomService.listCoursesClasses(idCurso);
       model.addAttribute("todasAulasDoCurso", todasAulasDoCurso);
       int indiceAulaAtual = -1;
@@ -401,6 +400,45 @@ public class CourseController {
       return "redirect:/cursos/" + idCurso + "/aulas";
     }
     return "ver-aula";
+  }
+
+  @PostMapping("/{idCurso}/aulas/{idAula}/deletar")
+  public String deletarAula(
+          @PathVariable("idCurso") int idCurso,
+          @PathVariable("idAula") int idAula,
+          HttpSession session,
+          RedirectAttributes redirectAttributes) {
+
+    System.out.println("CONTROLLER: Tentando DELETAR Aula: " + idAula + " do Curso ID: " + idCurso);
+    User usuarioLogado = (User) session.getAttribute("usuarioLogado");
+
+    if (usuarioLogado == null || usuarioLogado.getUserType() != UserType.PROFESSOR) {
+      redirectAttributes.addFlashAttribute("erro_geral", "Ação não permitida.");
+      return "redirect:/login";
+    }
+
+    try {
+      boolean deletadoComSucesso = classroomService.deleteAula(idAula, idCurso, usuarioLogado.getIdUser());
+
+      if (deletadoComSucesso) {
+        redirectAttributes.addFlashAttribute("sucesso_global", "Aula deletada com sucesso!");
+      } else {
+        redirectAttributes.addFlashAttribute("erro_global", "Não foi possível deletar a aula.");
+      }
+    } catch (IllegalAccessException e) {
+      e.printStackTrace();
+      redirectAttributes.addFlashAttribute("erro_permissao", e.getMessage());
+    } catch (IllegalArgumentException e) {
+      e.printStackTrace();
+      redirectAttributes.addFlashAttribute("erro_global", e.getMessage());
+    } catch (SQLException e) {
+      e.printStackTrace();
+      redirectAttributes.addFlashAttribute("erro_global", "Erro técnico ao deletar a aula.");
+    } catch (Exception e) {
+      e.printStackTrace();
+      redirectAttributes.addFlashAttribute("erro_global", "Ocorreu um erro inesperado ao deletar a aula.");
+    }
+    return "redirect:/cursos/" + idCurso;
   }
 
   @PostMapping("/{idCurso}/aulas/{idAula}/exercicios/{idExercicio}/responder")
@@ -820,6 +858,46 @@ public class CourseController {
       redirectAttributes.addFlashAttribute("erro_questao", "Erro ao adicionar questão: " + e.getMessage());
     }
     return "redirect:/cursos/" + idCurso + "/exames/" + idExamDefinition + "/questoes";
+  }
+
+  @GetMapping("/{idCurso}/minhas-notas")
+  public String exibirNotasDoCursoParaAluno(
+          @PathVariable("idCurso") int idCurso,
+          Model model,
+          HttpSession session,
+          RedirectAttributes redirectAttributes) {
+
+    System.out.println("--- CursoController: GET /cursos/" + idCurso + "/minhas-notas ---");
+    User usuarioLogado = (User) session.getAttribute("usuarioLogado");
+
+    if (usuarioLogado == null || usuarioLogado.getUserType() != UserType.STUDENT) {
+      redirectAttributes.addFlashAttribute("erro_geral", "Apenas alunos logados podem ver suas notas.");
+      return "redirect:/login";
+    }
+
+    try {
+      Course curso = courseService.searchCourseByIdComplete(idCurso);
+      if (curso == null) {
+        redirectAttributes.addFlashAttribute("erro_geral", "Curso não encontrado.");
+        return "redirect:/cursos";
+      }
+      model.addAttribute("curso", curso);
+
+      List<GradeStudent> notasDoAlunoNoCurso = examDefinitionService.listarNotasDoAlunoPorProvaECursoId(idCurso, usuarioLogado.getIdUser());
+      model.addAttribute("listaNotasProvas", notasDoAlunoNoCurso);
+      System.out.println("Controller: Encontradas " + notasDoAlunoNoCurso.size() + " notas de provas para o aluno ID " + usuarioLogado.getIdUser() + " no curso ID " + idCurso);
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+      model.addAttribute("erro_geral", "Erro ao carregar suas notas para este curso: " + e.getMessage());
+      model.addAttribute("listaNotasProvas", new ArrayList<>());
+    } catch (IllegalArgumentException e) {
+      e.printStackTrace();
+      model.addAttribute("erro_geral", e.getMessage());
+      model.addAttribute("listaNotasProvas", new ArrayList<>());
+    }
+
+    return "notas-prova";
   }
 
   private String recarregarPaginaComErro(int idExamDefinition, Model model, Course curso, ExamDefinition examDef, int idUsuarioLogado, String mensagemErro) throws SQLException, IllegalAccessException {

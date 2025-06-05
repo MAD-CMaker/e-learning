@@ -142,22 +142,27 @@ public class ClassroomService {
    * @throws IllegalArgumentException Se aula/curso não encontrado.
    * @throws IllegalAccessException Se o professor não for o responsável pelo curso da aula.
    */
-  public boolean removeClass(int idClassroom, int idProfessorLogged)
-      throws SQLException, IllegalArgumentException, IllegalAccessException {
+  public boolean deleteAula(int idClassroom, int idCurso, int idProfessorLogged)
+          throws SQLException, IllegalArgumentException, IllegalAccessException {
 
-    Classroom existingClass = classroomDAO.searchById(idClassroom);
-    if (existingClass == null) {
-      throw new IllegalArgumentException("Class ID " + idClassroom + " not found.");
+    System.out.println("SERVICE (Aula): Tentando deletar aula ID: " + idClassroom + " do curso ID: " + idCurso);
+    Classroom aulaParaDeletar = classroomDAO.searchById(idClassroom); //
+
+    if (aulaParaDeletar == null) {
+      throw new IllegalArgumentException("Aula com ID " + idClassroom + " não encontrada.");
+    }
+    if (aulaParaDeletar.getCourseId() != idCurso) {
+      throw new IllegalArgumentException("Aula não pertence ao curso especificado.");
     }
 
-    Course classCourse = courseDAO.searchCourseById(existingClass.getCourseId());
-    if (classCourse == null) {
-      throw new IllegalArgumentException("Course associated with the class (ID: " + existingClass.getCourseId() + ") not found.");
+    Course cursoDaAula = courseDAO.searchCourseById(idCurso);
+    if (cursoDaAula == null) {
+      throw new IllegalArgumentException("Curso associado à aula não encontrado.");
+    }
+    if (cursoDaAula.getResponsibleProfessor() == null || cursoDaAula.getResponsibleProfessor().getIdUser() != idProfessorLogged) {
+      throw new IllegalAccessException("Professor não autorizado a deletar aulas deste curso.");
     }
 
-    if (classCourse.getResponsibleProfessor() == null || classCourse.getResponsibleProfessor().getIdUser() != idProfessorLogged) {
-      throw new IllegalAccessException("Teacher not authorized to remove this class.");
-    }
 
     return classroomDAO.deleteClass(idClassroom);
   }

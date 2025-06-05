@@ -2,12 +2,60 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Meu Perfil</title>
+    <title>Minhas Notas - <span th:text="${curso?.title}">Curso</span></title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <style>
+        .results-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .results-table th, .results-table td { border: 1px solid #CACACA; padding: 10px; text-align: left; }
+        .results-table th { background-color: #00747C; color: white; }
+        .results-table tr:nth-child(even) { background-color: #f8f9fa; }
+        .score { font-weight: bold; }
+        .pass { color: green; }
+        .fail { color: red; }
+    </style>
 </head>
 <body>
+
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
+<div class="container">
+    <h1 th:if="${curso}" th:text="'Minhas Notas para o Curso: ' + ${curso.title}">Minhas Notas</h1>
+    <h1 th:unless="${curso}">Minhas Notas</h1>
+
+    <div th:if="${erro_geral}" class="error-message" th:text="${erro_geral}"></div>
+
+    <div th:if="${listaNotasProvas != null and not #lists.isEmpty(listaNotasProvas)}">
+        <p>Aqui estão os seus resultados para as provas realizadas neste curso:</p>
+        <table class="results-table">
+            <thead>
+            <tr>
+                <th>Prova</th>
+                <th>Descrição da Prova</th>
+                <th>Data de Criação da Prova</th>
+                <th>Sua Nota</th>
+                <th>Valor Total da Prova</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="notaInfo : ${listaNotasProvas}">
+                <td th:text="${notaInfo.title}">Título da Prova</td>
+                <td th:text="${notaInfo.description ?: '-'}">Descrição da Prova</td>
+                <td th:text="${#temporals.format(notaInfo.creationDate, 'dd/MM/yyyy HH:mm')}">Data de Criação</td>
+                <td><strong class="score" th:text="${notaInfo.grade}">Nota do Aluno</strong></td>
+                <td><span th:text="${notaInfo.totalValueExam}">Valor Total</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:if="${listaNotasProvas == null or #lists.isEmpty(listaNotasProvas)}">
+        <p>Você ainda não tem notas registradas para provas neste curso ou nenhuma prova foi submetida.</p>
+    </div>
+
+    <p style="margin-top:20px;">
+        <a th:if="${curso}" th:href="@{/cursos/{id}(id=${curso.idCourse})}" class="button">&larr; Voltar para Detalhes do Curso</a>
+        <a th:unless="${curso}" th:href="@{/cursos}" class="button">&larr; Voltar para Lista de Cursos</a>
+    </p>
+</div>
 
 </body>
 </html>

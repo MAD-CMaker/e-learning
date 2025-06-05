@@ -47,8 +47,7 @@
                   method="post" style="display:inline;">
                 <button type="submit" class="action-button">Matricular-se neste Curso (Comprar)</button>
             </form>
-            <a th:if="${isAlunoMatriculado}" th:href="@{/cursos/{id}/aulas(id=${curso.idCourse})}" class="button">Acessar
-                Aulas</a>
+
         </div>
         <div th:if="${session.usuarioLogado == null}">
             <p><a th:href="@{/login}">Faça login</a> para se matricular ou comentar.</p>
@@ -186,6 +185,8 @@
 
             <div class="aulas-section" style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
                 <h2>Aulas do Curso</h2>
+                <a th:if="${isAlunoMatriculado}" th:href="@{/cursos/{id}/aulas(id=${curso.idCourse})}" class="button">Acessar
+                    Aulas</a>
 
                 <div th:if="${isProfessorDono}" style="margin-bottom: 15px;">
                     <a th:href="@{/cursos/{idCurso}/aulas/nova(idCurso=${curso.idCourse})}" class="button-secondary"
@@ -203,9 +204,14 @@
                                 <a th:href="@{/cursos/{idCurso}/aulas/{idAula}/gerenciar(idCurso=${curso.idCourse}, idAula=${aula.classroomId})}" style="font-size:0.8em; margin-left:10px; color: green;">
                                     Gerenciar Exercícios
                                 </a>
-                                <form th:action="@{/cursos/{idCurso}/aulas/{idAula}/deletar(idCurso=${curso.idCourse}, idAula=${aula.classroomId})}"...>
-                                    <button type="submit" ...>Deletar Aula</button>
-                                </form>
+                                <div th:if="${isProfessorDono}" style="margin-top: 5px;">
+                                    <form th:action="@{/cursos/{idCurso}/aulas/{idAula}/deletar(idCurso=${curso.idCourse}, idAula=${aula.classroomId})}"
+                                          method="post"
+                                          style="display:inline;"
+                                          onsubmit="return confirm('Tem certeza que deseja deletar esta aula? Todos os seus exercícios também serão afetados.');">
+                                        <button type="submit" class="action-button-small-red">Deletar Aula</button>
+                                    </form>
+                                </div>
                             </div>
                         </li>
                     </ul>
@@ -278,8 +284,10 @@
                     </li>
                 </ul>
             </div>
-            <div th:if="${isAlunoMatriculado}" class="boletim-section">
+            <div th:if="${isAlunoMatriculado}">
                 <h2>Boletim</h2>
+                <a th:href="@{/cursos/{idCurso}/minhas-notas(idCurso=${curso.idCourse})}"
+                   class="action-button button-secondary" style="margin-left: 10px;">Ver Minhas Notas Deste Curso</a>
             </div>
             <div th:if="${isAlunoMatriculado and (#lists.isEmpty(provasDisponiveisParaAluno))}"
                  class="provas-aluno-section" ...>
