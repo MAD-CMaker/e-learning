@@ -5,7 +5,6 @@ import com.elearning.remoteensine.model.enums.ExerciseType;
 import com.elearning.remoteensine.model.enums.UserType;
 import com.elearning.remoteensine.service.*;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,17 +19,17 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class TestController {
+public class ExamDefinitionController {
     private final ExamDefinitionService examDefinitionService;
     private final ExamQuestionService examQuestionService;
     private final CourseService courseService;
     private final EnrollService enrollService;
     private final ExamService examService;
 
-    public TestController(ExamDefinitionService examDefinitionService,
-                          ExamQuestionService examQuestionService,
-                          CourseService courseService,
-                          EnrollService enrollService, ExamService examService) {
+    public ExamDefinitionController(ExamDefinitionService examDefinitionService,
+                                    ExamQuestionService examQuestionService,
+                                    CourseService courseService,
+                                    EnrollService enrollService, ExamService examService) {
         this.examDefinitionService = examDefinitionService;
         this.examQuestionService = examQuestionService;
         this.courseService = courseService;

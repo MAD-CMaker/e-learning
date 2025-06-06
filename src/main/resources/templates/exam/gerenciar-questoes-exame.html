@@ -54,13 +54,9 @@
             </div>
 
             <div class="form-group">
-                <label for="exerciseType">Tipo de Questão:</label>
-                <select id="exerciseType" th:field="*{exerciseType}" required>
-                    <option value="">Selecione...</option>
-                    <option th:each="tipo : ${tiposExercicio}"
-                            th:value="${tipo}"
-                            th:text="${tipo.toString().replace('_', ' ')}">TIPO</option>
-                </select>
+                <label>Tipo de Questão:</label>
+                <p>MÚLTIPLA ESCOLHA</p>
+                <input type="hidden" name="exerciseType" value="MULTIPLA_ESCOLHA"/>
             </div>
 
             <div class="form-group">

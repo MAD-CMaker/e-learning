@@ -33,7 +33,6 @@ public class CourseDAO extends AbstractDAO{
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, course.getTitle());
-            ;
             pstmt.setString(2, course.getDescription());
             if (course.getResponsibleProfessor() != null) {
                 pstmt.setInt(3, course.getResponsibleProfessor().getIdUser());
